@@ -1,18 +1,28 @@
 <template>
-    <div class="attendanceCard ">
-        <div class="d-flex justify-content-around mt-3">
-            <h4 class="attendTitle">Attendance feedback</h4>
-        <router-link to="/overallattendance"><button class="btn btn-sm">see more</button></router-link>
+    <div class="card attendanceCard shadow-sm "> <div class="d-flex justify-content-around mt-3">
+            <h4 class="mb-0 fs-2">Attendance feedback</h4>
+            <router-link to="/overallattendance">
+                <button class="btn-primary me-3 h-50">See More</button>
+            </router-link>
         </div>
-        <div class="subDiv">
-            <p class="sub-txt">Stats for {{ formattedTargetDate }}</p>
-            <img class="sub-img" src="https://cdn3.iconfinder.com/data/icons/human-resources-management-2/100/human-resources-management-19-512.png" alt="target">
+        <div class="subDiv text-center my-3">
+            <p class="fs-4 text-muted mb-2 fw-medium">Stats for {{ formattedTargetDate }}</p>
+            <img class="sub-img img-fluid" src="https://cdn3.iconfinder.com/data/icons/human-resources-management-2/100/human-resources-management-19-512.png" alt="target" style="max-height: 80px;">
         </div>
-        <div class="mini-attendCards">
-            <div class="mini-stats">
-                <div class="a-l-a">Present {{ presentCount }}</div>
-                <div class="a-l-a">Late {{ lateCount }}</div>
-                <div class="a-l-a">Absent {{ absentCount }}</div>
+        <div class="mini-attendCards px-3 pb-3 d-flex">
+            <div class="mini-stats d-flex justify-content-around mb-3">
+                <div class="a-l-a text-center flex-fill mx-1">
+                    <span class="d-block fw-bold">Present</span>
+                    <span class="d-block">{{ presentCount }}</span>
+                </div>
+                <div class="a-l-a text-center flex-fill mx-1">
+                    <span class="d-block fw-bold">Late</span>
+                    <span class="d-block">{{ lateCount }}</span>
+                </div>
+                <div class="a-l-a text-center flex-fill mx-1">
+                    <span class="d-block fw-bold">Absent</span>
+                    <span class="d-block">{{ absentCount }}</span>
+                </div>
             </div>
             <div class="tank">
                 <div class="attendanceProgress">
@@ -167,58 +177,44 @@ export default {
 </script>
 
 <style>
-/* Your existing styles (no changes needed for styles) */
-.attendTitle {
-    margin: 5px;
-    font-size: 30px;
-    color: rgba(126, 123, 123, 0.904);
+/* --- Keyframes for a pure fade-in animation --- */
+@keyframes fadeInOnly {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.attendanceCard {
+    margin-left: 10px;
+    width: 100%;
+    height: 350px; 
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px 0 rgba(8, 14, 20, 0.312);
+
+    animation: fadeInOnly 0.8s ease-out forwards;
 }
 
 .subDiv {
     display: flex;
     justify-content: space-between;
     width: 100%;
+    align-items: center; 
 }
 
+.a-l-a{
+    font-size: 20px;
+}
 .sub-img {
     width: 150px;
-}
-
-.sub-txt {
-    font-size: 30px;
-    font-weight: 400;
-    padding-left: 20px;
-    padding-top: 20px;
-}
-
-.attendanceCard {
-    margin-left: 10px;
-    width: 100%;
-    height: 200px;
-    background-color: white;
-    height: 350px;
-    border-radius: 10px;
-    box-shadow: 0 4px 16px 0 rgba(8, 14, 20, 0.312);
-}
-
-.mini-stats {
-    display: flex;
-    justify-content: space-between;
-    align-self: center;
-    align-items: center;
-    width: 90%;
-    height: 70px;
-}
-
-.a-l-a {
-    color: #2c3e50;
-    font-size: 25px;
-    font-weight: 400;
+    margin-right: 15px; 
 }
 
 .mini-attendCards {
     width: 100%;
-    display: flex;
     flex-direction: column;
     justify-content: center;
     align-content: center;
@@ -233,25 +229,9 @@ export default {
 }
 
 .attendanceProgress {
-    width: 90%;
+    width: 100%;
     background-color: grey;
     border-radius: 4px;
-}
-
-.seeattend {
-    width: 100%;
-    height: 30px;
-    /* background-color: white;
-    border: 1px solid skyblue;
-    border-radius: 5px;
-    */
-    color: rgb(78, 177, 216);
-    margin-top: 30px; 
-}
-
-.see-wrap {
-    margin: auto;
-    width: 90%;
 }
 
 .progressBar {
@@ -266,49 +246,4 @@ export default {
     border-radius: 4px;
 }
 
-@media screen and (max-width: 1024px) {
-    .attendTitle {
-        font-size: 25px;
-    }
-
-    .subDiv {
-        width: 95%;
-        display: flex;
-        align-items: center;
-    }
-
-    .sub-txt {
-        font-size: 20px;
-        padding: 10px 0 0 10px;
-    }
-
-    .sub-img {
-        width: 60px;
-    }
-
-    .a-l-a {
-        font-size: 18px;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .subDiv {
-        width: 95%;
-    }
-
-    .a-l-a {
-        text-align: center;
-    }
-
-    .attendanceCard {
-        width: 50%;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .attendanceCard {
-        width: 100%;
-        margin: 10px 0 0 0;
-    }
-}
 </style>

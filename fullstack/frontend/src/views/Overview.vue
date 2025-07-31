@@ -1,6 +1,6 @@
 <template>
     <div class="overView-Layout">
-        <div class="stats">
+        <div class="stats d-flex pt-3">
             <div class="sub-layout">
                 <div class="dash-title">
                     <WelcomeComp />
@@ -54,24 +54,20 @@ export default {
 }
 
 .stats {
-    display: flex;
     width: 80%;
     margin-left: 15%;
-    padding-top: 10px;
 }
 
 .sub-layout {
     display: flex;
     flex-direction: column;
-    width: 70%;
+    width: 100%;
 }
 
 .cont {
     display: flex;
+    justify-content: space-around;
     width: 100%;
-}
-@media screen and (max-width: 1024) {
-    
 }
 @media screen and (max-width: 768px){
     .stats{
@@ -92,7 +88,7 @@ export default {
     }
     .rev-card-item{
         width: 97%;
-        height: 500px;
+        height: 75%;
     }
 }
 @media screen and (max-width: 480px){

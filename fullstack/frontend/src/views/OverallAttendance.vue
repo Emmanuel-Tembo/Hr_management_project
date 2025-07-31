@@ -1,11 +1,8 @@
 <template>
-    <!-- <div class="btn-return">
-        <router-link to="/overview">
-            <i class="i-arrow fa fa-arrow-left fa-lg" aria-hidden="true"></i>
-        </router-link>
-    </div> -->
-    <h1 class="text-center">This is the overeall attendance</h1>
-    <EmployeeOverallAttendance />
+    <div class="table-sep">
+        <h3 class="text-center fs-1">This is the overeall attendance</h3>
+        <EmployeeOverallAttendance />
+    </div>
     <SideBar />
 </template>
 
@@ -23,23 +20,30 @@ export default {
 }
 </script>
 <style>
-    .btn-return{
-        margin-left: 210px;
-        height: 50px;
-        width: 50px;
-        border: 2px solid #2d4257;
-        text-align: center;
-        align-content: center;
-        border-radius: 50%;
-        position: fixed;
-        margin-top: 10px;
+.table-sep {
+    width: 80%;
+    margin-left: 17%;
+}
+
+.btn-return {
+    margin-left: 210px;
+    height: 50px;
+    width: 50px;
+    border: 2px solid #2d4257;
+    text-align: center;
+    align-content: center;
+    border-radius: 50%;
+    position: fixed;
+    margin-top: 10px;
+}
+
+.i-arrow {
+    color: #2d4257;
+}
+
+@media screen and (max-width: 1024px) {
+    .pageTitle {
+        font-size: 40px;
     }
-    .i-arrow{
-        color: #2d4257;
-    }
-    @media screen and (max-width: 1024px){
-        .pageTitle{
-            font-size: 40px;
-        }
-    }
+}
 </style>

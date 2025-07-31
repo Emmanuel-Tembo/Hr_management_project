@@ -8,9 +8,8 @@
                     <th class="Hrow" scope="col">
                         <div class="btn-group">
                             <span class="date">Date</span>
-                            <button type="button" class="btn"></button>
                             <button type="button"
-                                class="btn btn-danger dropdown-toggle dropdown-toggle-split"
+                                class="btn btn-danger dropdown-toggle dropdown-toggle-split ms-1"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="visually-hidden">Toggle Dropdown</span>
                             </button>
@@ -29,11 +28,11 @@
             </thead>
             <tbody>
                 <tr v-for="record in displayedAttendance" :key="record.EmployeeID + record.attendance_date">
-                    <td>{{ record.EmployeeID }}</td>
-                    <td>{{ record.EmployeeName }}</td>
-                    <td>{{ record.attendance_date }}</td>
-                    <td :style="changeBackground(record.attendance_status)"> {{ record.attendance_status }} </td>
-                    <td>{{ record.clocked_in_time }}</td>
+                    <td class="fw-medium">{{ record.EmployeeID }}</td>
+                    <td class="fw-medium">{{ record.EmployeeName }}</td>
+                    <td class="fw-medium">{{ record.attendance_date }}</td>
+                    <td class="fw-medium" :style="changeBackground(record.attendance_status)"> {{ record.attendance_status }} </td>
+                    <td class="fw-medium">{{ record.clocked_in_time }}</td>
                     <td :style="changeBackground(record.attendance_state)">
                         <div class="td-back">
                             {{ record.attendance_state }}
@@ -138,9 +137,8 @@ export default {
     font-weight: 300;
     background-color: white;
     border-radius: 5px;
-    width: 80%;
+    /* width: 90%; */
     height: 90vh;
-    margin-left: 15%;
     margin-top: 20px;
 }
 

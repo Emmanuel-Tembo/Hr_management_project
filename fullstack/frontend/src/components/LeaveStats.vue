@@ -2,22 +2,24 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <div>
-                <h3 class="mb-0">Pending Leave Requests</h3>
-                <p class="text-muted mb-0">Date: {{ displayDate }}</p>
+                <h3 class="mb-0 fs-3">Pending Leave Requests</h3>
+                <p class="text-muted mb-0 fw-medium">Date: {{ displayDate }}</p>
             </div>
             <router-link to="/leaveform">
-                <button class="btn btn-primary btn-sm">See all</button>
+                <button class="btn-primary">See all</button>
             </router-link>
         </div>
-        
-        <div class="card-body overflow-auto" style="max-height: 200px;"> 
-            <div class="d-flex align-items-center mb-3" v-for="leaveRequest in topPendingLeaveRequests" :key="leaveRequest.leave_id">
+
+        <div class="card-body overflow-auto" style="max-height: 200px;">
+            <div class="d-flex align-items-center mb-3" v-for="leaveRequest in topPendingLeaveRequests"
+                :key="leaveRequest.leave_id">
                 <div class="flex-shrink-0 me-3">
-                    <img src="https://icon2.cleanpng.com/20180425/qtq/avtpmxje6.webp" alt="Employee Profile Picture" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                    <img src="https://icon2.cleanpng.com/20180425/qtq/avtpmxje6.webp" alt="Employee Profile Picture"
+                        class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                 </div>
                 <div class="flex-grow-1 me-3">
                     <h5 class="mb-1">{{ leaveRequest.name }}</h5>
-                    <p class="text-muted mb-0">Reason: {{ leaveRequest.reason }}</p>
+                    <p class="text-muted mb-0 fw-medium">Reason: {{ leaveRequest.reason }}</p>
                 </div>
                 <div class="text-end">
                     <p class="statusDecoration" :style="getLeaveStatusStyle(leaveRequest.status)">
@@ -39,11 +41,9 @@ export default {
     name: 'LeaveStats',
     computed: {
         ...mapGetters([
-            'uniqueEmployeesWithLeave', // This getter provides all leave records grouped by employee
-            // 'pendingLeaveCount' // You can uncomment this if you need the raw count here
+            'uniqueEmployeesWithLeave',
+            // 'pendingLeaveCount'
         ]),
-        // Filters uniqueEmployeesWithLeave to only show employees who have *any* pending leave requests.
-        // It then maps these employees to include only their pending leave requests.
         filteredEmployeesWithPendingLeaves() {
             const employeesWithPending = this.uniqueEmployeesWithLeave.filter(employee =>
                 employee.leaveRequests.some(leave => leave.status === 'Pending')
@@ -52,17 +52,15 @@ export default {
             return employeesWithPending.map(employee => ({
                 ...employee,
                 leaveRequests: employee.leaveRequests.filter(leave => leave.status === 'Pending')
-            })).filter(employee => employee.leaveRequests.length > 0); // Ensure they still have pending requests after filtering
+            })).filter(employee => employee.leaveRequests.length > 0);
         },
-        // Flattens all pending requests from all relevant employees into a single array,
-        // sorts them, and takes the top 4.
         topPendingLeaveRequests() {
             const allPending = [];
             this.filteredEmployeesWithPendingLeaves.forEach(employee => {
                 employee.leaveRequests.forEach(leave => {
                     allPending.push({
                         emp_id: employee.emp_id,
-                        name: employee.name, // Employee name from the parent employee object
+                        name: employee.name,
                         leave_id: leave.leave_id,
                         start_date: leave.start_date,
                         end_date: leave.end_date,
@@ -72,19 +70,14 @@ export default {
                 });
             });
 
-            // Sort by start_date (oldest first)
             allPending.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
 
-            // Return only the first 4 for display
             return allPending.slice(0, 4);
         },
-        // Determines the date to display in the card header
         displayDate() {
             if (this.topPendingLeaveRequests.length > 0) {
-                // Return the start date of the oldest pending request
                 return this.topPendingLeaveRequests[0].start_date;
             }
-            // If no pending requests, display today's date
             const today = new Date();
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -94,10 +87,9 @@ export default {
     },
     methods: {
         ...mapActions([
-            'getLeaveRecords',       // Essential: Fetches all leave data for the uniqueEmployeesWithLeave getter
-            'getPendingLeaveStats'   // Good to have: Fetches specific pending stats for dashboard counts elsewhere
+            'getLeaveRecords',
+            'getPendingLeaveStats'
         ]),
-        // Helper method to get background and text color based on leave status
         getLeaveStatusStyle(status) {
             if (status === 'Approved') {
                 return { backgroundColor: 'green', color: 'white' };
@@ -106,18 +98,42 @@ export default {
             } else if (status === 'Pending') {
                 return { backgroundColor: 'orange', color: 'white' };
             }
-            return {}; // Default for unknown status
+            return {};
         },
     },
     mounted() {
-        // Fetch necessary data from the store when the component is mounted
         this.getLeaveRecords();
-        this.getPendingLeaveStats(); // This ensures the counts are updated, even if this component doesn't explicitly show them
+        this.getPendingLeaveStats();
     }
 }
 </script>
 
-<style scoped>
+<style>
+/* --- New Keyframes Animation for sliding in from the LEFT, slower --- */
+@keyframes slideInFromLeftSlower {
+    0% {
+        transform: translateX(-100%);
+        /* Starts 100% of its own width off-screen to the LEFT */
+        opacity: 0;
+        /* Starts invisible */
+    }
+
+    100% {
+        transform: translateX(0);
+        /* Ends at its normal position */
+        opacity: 1;
+        /* Ends fully visible */
+    }
+}
+
+/* Apply the animation to the card */
+.card {
+    animation: slideInFromLeftSlower 1.2s ease-out forwards;
+    /* 1.2s duration (slower than 0.8s) */
+}
+
+
+/* Existing styles below */
 h3 {
     margin: 5px;
     font-size: 30px;
@@ -148,7 +164,7 @@ img {
     width: 40px;
     border-radius: 50%;
     margin-left: 8px;
-    object-fit: cover; /* Ensures image covers the area without distortion */
+    object-fit: cover;
 }
 
 .cardtop {
@@ -169,11 +185,16 @@ button {
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
 }
+
 button:hover {
     background-color: rgb(78, 177, 216);
     color: white;
 }
 
+/* Note: 'card2' class is not used in your template's root div,
+   it's just 'card m-2'. Consider removing or renaming this rule if it's unused,
+   or if it was intended for the 'card' class in this component, apply its properties
+   directly to the .card rule above if appropriate. */
 .card2 {
     margin: 0;
     width: 450px;
@@ -190,7 +211,7 @@ button:hover {
 .Laeveimg {
     width: 50px;
     flex-shrink: 0;
-    display: flex; /* For centering the image vertically if needed */
+    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -205,6 +226,7 @@ button:hover {
     padding: 5px 0;
     border-bottom: 1px solid #eee;
 }
+
 .leaveCard:last-of-type {
     border-bottom: none;
 }
@@ -246,6 +268,7 @@ button:hover {
 /* Media Queries for responsiveness */
 @media screen and (max-width: 1024px) {
     .card2 {
+        /* If this was meant to style .card, update its selector */
         width: 300px;
         padding: 10px;
     }
@@ -274,6 +297,7 @@ button:hover {
 
 @media screen and (max-width: 768px) {
     .card2 {
+        /* If this was meant to style .card, update its selector */
         width: 100%;
         max-width: 400px;
         margin: 0 auto;
@@ -288,18 +312,22 @@ button:hover {
     .Laeveimg {
         width: 40px;
     }
+
     img {
         width: 35px;
         margin-left: 0;
     }
+
     .statusDecoration {
         width: 60px;
         height: 25px;
         font-size: 0.8em;
     }
+
     .rsn-txt {
         font-size: 0.9em;
     }
+
     h5 {
         font-size: 1em;
     }
@@ -307,14 +335,17 @@ button:hover {
 
 @media screen and (max-width: 480px) {
     .card2 {
+        /* If this was meant to style .card, update its selector */
         width: 100%;
         max-width: none;
         border-radius: 0;
         box-shadow: none;
     }
+
     .leaveCard {
         font-size: 0.8rem;
     }
+
     .statusDecoration {
         width: 55px;
         height: 22px;
