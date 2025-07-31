@@ -1,62 +1,179 @@
 <template>
     <div class="signInScreen">
         <div class="signIn">
-            <div class="signIn-box">
+            <div class="signIn-header">
                 <h3>ModernTech Solutions</h3> <br> <hr> <br>
+                <div class="toggle-buttons">
+                    <button @click="isSignIn = true" :class="{ 'active-toggle': isSignIn}">Sign In</button>
+                    <button @click="isSignIn = false" :class="{ 'active-toggle': !isSignIn}">Register</button>
+                </div>
             </div>
             
-            <!-- SIGN IN FORM -->
-            <form @submit="singInForm">
-                <span>Sign In</span> <br><br>
-                <div class="singIn-form">
-                    <div class="inputs">
-                        <!-- USERNAME -->
-                        <input type="text" class="username" v-model="enteredUser" :class="{'errorInput': signInError}" placeholder="Username" required>
-                        <br> <br>
+            <div class="form-container">
+                <!-- SIGN IN FORM -->
+                <form @submit.prevent="signInForm" v-if="isSignIn">
+                    <span>Sign In</span> <br><br>
+                    <div class="singIn-form">
+                        <div class="inputs">
+                            <!-- USERNAME -->
+                            <input type="text" class="username" v-model="enteredUser" :class="{'errorInput': signInError}" placeholder="Username" required>
+                            <br> <br>
 
-                        <!-- PASSWORD -->
-                        <input type="password" class="password" v-model="enteredPwd" :class="{'errorInput': signInError}" placeholder="Password" required>
-                        <br> <br>
-                    </div>
+                            <!-- PASSWORD -->
+                            <input type="password" class="password" v-model="enteredPwd" :class="{'errorInput': signInError}" placeholder="Password" required>
+                            <br> <br>
+                        </div>
 
-                    <!-- SUBMIT BUTTON -->
-                    <div class="cont-button">
-                        <button type="submit" class="signIn-button">Sign In</button>
+                        <!-- SUBMIT BUTTON -->
+                        <div class="cont-button">
+                            <button type="submit" class="signIn-button">Sign In</button>
+                        </div>
                     </div>
-                </div>
-                <br>
-                <p class="error-msg" :class="{visible: signInError}">Invalid username or password</p>
-            </form>
+                    <br>
+                    <p class="error-msg" :class="{visible: signInError}">Invalid credentials. Please try again.</p>
+                </form>
+
+                <!-- Register -->
+                <form @submit.prevent="registerForm" v-else>
+                    <span>Register</span> <br><br>
+                    <div class="signIn-form">
+                        <div class="inputs">
+                            <input type="text" class="username" v-model="regUser" placeholder="Insert Username" required>
+                            <br><br>
+
+                            <input type="text" class="ID" v-model="regID" placeholder="Insert Employee ID" required>
+                            <br><br>
+
+                            <input type="password" class="password" v-model="regPwd" placeholder="Insert Password" required>
+                            <br><br>
+
+                            <input type="password" class="password" v-model="regConfirmPwd" placeholder="Confirm Password" required>
+                            <br><br>
+                        </div>
+
+                        <div class="cont-button">
+                            <button type="submit" class="signIn-button">Register</button>
+                        </div>
+                        <br>
+                        <p class="error-msg" :class="{visible: registerError}">{{ registerErrorMessage }}</p>
+                        <p class="success-msg" :class="{visible: registerSuccess}">Registration successful! Please sign in.</p>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+    import axios from 'axios';
     export default {
         data() {
             return {
-                correctCredentials: {
-                    username: "Admin",
-                    password: "Password123"
-                },
+                isSignIn: true,
                 enteredUser: "",
                 enteredPwd: "",
-                signInError: false
+                signInError: false,
+
+                regUser: '',
+                regID: '',
+                regPwd:'',
+                regConfirmPwd:'',
+                registerError: false,
+                registerSuccess: false
             }
         },
         methods: {
-            singInForm(event) {
-                event.preventDefault();
+            async signInForm() {
+                this.signInError = false;
+                this.registerSuccess = false;
 
-                const username = this.correctCredentials.username
-                const password = this.correctCredentials.password
 
-                if (this.enteredUser.trim() === username && this.enteredPwd.trim() === password) {
-                    this.signInError = false
-                    this.$router.push('/overview')
-                } else {
-                    this.signInError = true
+                try {
+                    const res = await axios.post('http://localhost:3030/api/auth/login', {
+                        username: this.enteredUser,
+                        password: this.enteredPwd
+                    });
+
+
+                    if (res.data && res.data.token) {
+                        localStorage.setItem('userToken', res.data.token);
+                        console.log('Login successful! Token: ', res.data.token);
+                        this.$router.push('/overview');
+                    } else {
+                        this.signInError = true;
+                        console.error('Login successful but no token received');
+                    }
+                } catch (e) {
+                    this.signInError = true;
                 }
+            },
+
+
+            async registerForm() {
+                this.registerError = false;
+                this.registerSuccess = false;
+                this.registerErrorMessage = 'Registration failed';
+
+                if (
+                    this.regUser.trim() === "" || 
+                    this.regID.trim() === "" || 
+                    this.regPwd.trim() === "" || 
+                    this.regConfirmPwd.trim() === ""
+                ) {
+                    this.registerError = true;
+                    this.registerErrorMessage = 'All fields are required'
+                    return;
+                }
+
+                if (this.regPwd !== this.regConfirmPwd) {
+                    this.registerError = true;
+                    this.registerErrorMessage = 'Passwords do not match';
+                    return;
+                }
+
+                try {
+                    const res = await axios.post('http://localhost:3030/api/auth/register', {
+                        emp_id: this.regID,
+                        username: this.regUser,
+                        password: this.regPwd
+                    });
+
+                    if (res.status === 201) {
+                        this.registerSuccess = true;
+                        this.regUser = "";
+                        this.regID = "";
+                        this.regPwd = "";
+                        this.regConfirmPwd = "";
+
+                        setTimeout(() => {
+                        this.isSignIn = true;
+                        this.registerSuccess = false
+                    }, 1500);
+                    }
+                } catch (e) {
+                this.registerError = true;
+                // Use the message from the backend's error response
+                this.registerErrorMessage = e.response ? e.response.data.message : 'An unexpected error occurred during registration.';
+            }
+
+                this.registerSuccess = true;
+                this.registerError = false; 
+
+                
+            }
+        },
+        watch: {
+            isSignIn(newValue) {
+                this.registerSuccess = false;
+                this.registerError = false;
+                this.signInError = false;
+                this.enteredUser = '';
+                this.enteredPwd = '';
+                this.regUser = '';
+                this.regID = '';
+                this.regPwd = '';
+                this.regConfirmPwd = '';
+                this.registerErrorMessage = 'Registration failed.';
             }
         }
     }
@@ -77,7 +194,6 @@
 
     .signIn {
         margin: 0 auto;
-        /* height: 70%; */
         padding: 40px;
         width: 50%;
         display: flex;
@@ -87,7 +203,27 @@
         border-radius: 20px;
         background-color: white;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        max-height: 80vh;
     }
+
+    .signIn-header {
+        width: 100%;
+        text-align: center;
+    }
+
+    .form-container {
+        flex-grow: 1;
+        width: 100%;
+        overflow-y: auto;
+        padding: 20px 0;
+        box-sizing: border-box;
+
+        &::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+        }
+    }
+
 
     h3 {
         color: #1b7ad8;
@@ -97,6 +233,34 @@
     .signIn span {
         font-size: 30px;
         font-weight: 300;
+    }
+
+    /* TOGGLE BUTTONS */
+    .toggle-buttons {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-evenly;
+        gap: 10px;
+    }
+
+     .toggle-buttons button {
+        background-color: #e0e0e0;
+        color: #555;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 18px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .toggle-buttons button.active-toggle {
+        background-color: #2d4257;
+        color: white;
+    }
+
+    .toggle-buttons button:hover:not(.active-toggle) {
+        background-color: #d0d0d0;
     }
 
     /* CSS INPUT */
@@ -140,7 +304,6 @@
     /* CSS ERROR */
     .signIn p {
         font-size: 20px;
-        background-color: rgb(247, 191, 186);
         padding: 15px 25px;
         border-radius: 15px;
     }
@@ -148,11 +311,20 @@
         visibility: hidden;
         opacity: 0;
         color: red;
+        background-color: rgb(247, 191, 186);
         transition: opacity ease 0.3s;
         font-weight: 400;
     }
 
-    .error-msg.visible {
+    .success-msg {
+        visibility: hidden;
+        opacity: 0;
+        background-color: rgb(200, 247, 186); 
+        color: green;
+        transition: opacity ease 0.3s;
+    }
+
+    .error-msg.visible, .success-msg.visible {
         visibility: visible;
         opacity: 1;
     }

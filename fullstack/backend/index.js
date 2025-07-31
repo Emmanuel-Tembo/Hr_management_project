@@ -13,8 +13,22 @@ const PORT = process.env.PORT; // env imports
 app.use(express.json()); // Middleware to parse JSON request bodies
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+
+const salaryRoutes = require('./routes/salaryRoutes');
+const departmentRoutes = require('./routes/departmentRoutes');
+const bankInfoRoutes = require('./routes/bankInfoRoutes');
+const taxRoutes = require('./routes/taxInfoRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+const authRoutes = require('./routes/authRoutes');
+
 app.use('/', attendanceRoutes);
 app.use('/leave', leaveRoutes);
+app.use('/api/salaries', salaryRoutes);
+app.use('/api/departments', departmentRoutes);
+app.use('/api/bankinfo', bankInfoRoutes);
+app.use('/api/taxinfo', taxRoutes);
+app.use('/api/reviews', reviewRoutes);
+app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => console.log(`Running on http://localhost:${PORT}`));
 

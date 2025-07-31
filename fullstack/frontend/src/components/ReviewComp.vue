@@ -1,62 +1,151 @@
 <template>
     <div class="pg-title">
-        <h3>Employee Review</h3>
+        <h1>Employee Review</h1>
     </div>
     <div class="r-stats">
         <div class="r-card1">
             <h2 class="r1-title">Average Employee Rating</h2>
             <div class="i-rev">
                 <i class="rv-i fa fa-star" aria-hidden="true"></i>
-                <p class="r-txt">8.7</p>
+                <p class="r-txt">{{ averageRating.toFixed(1) }}</p>
             </div>
         </div>
-        <div class="r-card2">
-            <h2 class="p-title">Average Performance</h2>
-            <div class="r-performers">
-                <div class="p-item1">
-                    <p class="p-txt">Attendance</p>
-                    <div class="p-rev">
-                        <i class="p-icon fa fa-star" aria-hidden="true"></i>
-                        <p class="p-icon-txt">8.6</p>
-                    </div>
-                </div>
-                <div class="p-item2">
-                    <p class="p-txt">Work Quality</p>
-                    <div class="p-rev">
-                        <i class="p-icon fa fa-star" aria-hidden="true"></i>
-                        <p class="p-icon-txt">9.2</p>
-                    </div>
-                </div>
-                <div class="p-item3">
-                    <p class="p-txt">Productivity</p>
-                    <div class="p-rev">
-                        <i class="p-icon fa fa-star" aria-hidden="true"></i>
-                        <p class="p-icon-txt">8.4</p>
-                    </div>
-                </div>
+        <!-- ADD BUTTON -->
+        <div>
+            <button class="add-btn" style="margin-right: 20px;" @click="showAddModal = true">Add Review</button>
+        </div>
+    </div>
+    
+    <br>
+    
+    <div class="add-model" v-if="showViewModal">
+        <div class="modal-add">
+            <span class="close-btn" @click="closeViewModal">&times;</span>
+            <h2>Review Details</h2>
+            <div v-if="selectedReview" class="reviewDetails">
+                <p><strong>Review ID:</strong> {{ selectedReview.review_id }}</p>
+                <p><strong>Employee ID:</strong> {{ selectedReview.emp_id }}</p>
+                <p><strong>Employee Name:</strong> {{ selectedReview.name }}</p>
+                <p><strong>Reviewer ID:</strong> {{ selectedReview.reviewer_emp_id }}</p>
+                <p><strong>Reviewer Name:</strong> {{ selectedReview.reviewer_name }}</p>
+                <p><strong>Department:</strong> {{ selectedReview.department_name }}</p>
+                <p><strong>Review Date:</strong> {{ selectedReview.review_date }}</p>
+                <p><strong>Rating:</strong> {{ selectedReview.rating }}</p>
+                <p><strong>Review Text:</strong> {{ selectedReview.review_text }}</p>
+            </div>
+            <div v-else>
+                <p>Loading review details...</p>
             </div>
         </div>
     </div>
-    <div class="heading">
+
+    <!-- ADD MODAL -->
+    <div class="add-model" v-if="showAddModal">
+        <div class="modal-add">
+            <span class="close-btn" @click="closeAddModal">&times;</span>
+            <h2>Add New Employee Review</h2>
+            <form @submit.prevent="addReviewEntry">
+                <div class="inputs">
+                    <label for="emp_id">Employee ID:</label>
+                    <input type="text" v-model="newReviewEntry.emp_id" id="emp_id" required>
+                </div>
+                <div class="inputs">
+                    <label for="reviewer_emp_id">Reviewer Employee ID:</label>
+                    <input type="text" v-model="newReviewEntry.reviewer_emp_id" id="reviewer_emp_id" required>
+                </div>
+                <div class="inputs">
+                    <label for="department_id">Department ID:</label>
+                    <input type="number" v-model="newReviewEntry.department_id" id="department_id" required>
+                </div>
+                <div class="inputs">
+                    <label for="review_date">Review Date:</label>
+                    <input type="date" v-model="newReviewEntry.review_date" id="review_date" required>
+                </div>
+                <div class="inputs">
+                    <label for="review_text">Review Text:</label>
+                    <textarea v-model="newReviewEntry.review_text" id="review_text"></textarea>
+                </div>
+                <div class="inputs">
+                    <label for="rating">Rating (1-5):</label>
+                    <input type="number" v-model="newReviewEntry.rating" id="rating" min="1" max="5" required>
+                </div>
+                <button type="submit" class="submit-btn">Submit Review</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- UPDATE MODAL -->
+    <div class="add-model" v-if="showUpdateModal">
+        <div class="modal-add">
+            <span class="close-btn" @click="closeUpdateModal">&times;</span>
+            <h2>Update Employee Review</h2>
+            <form @submit.prevent="updateReviewEntry">
+                <div v-if="reviewToUpdate">
+                    <p><strong>Review ID:</strong> {{ reviewToUpdate.review_id }}</p>
+                    <div class="inputs">
+                        <label for="update_emp_id">Employee ID:</label>
+                        <input type="text" v-model="reviewToUpdate.emp_id" id="update_emp_id" required>
+                    </div>
+                    <div class="inputs">
+                        <label for="update_reviewer_emp_id">Reviewer Employee ID:</label>
+                        <input type="text" v-model="reviewToUpdate.reviewer_emp_id" id="update_reviewer_emp_id" required>
+                    </div>
+                    <div class="inputs">
+                        <label for="update_department_id">Department ID:</label>
+                        <input type="number" v-model="reviewToUpdate.department_id" id="update_department_id" required>
+                    </div>
+                    <div class="inputs">
+                        <label for="update_review_date">Review Date:</label>
+                        <input type="date" v-model="reviewToUpdate.review_date" id="update_review_date" required>
+                    </div>
+                    <div class="inputs">
+                        <label for="update_review_text">Review Text:</label>
+                        <textarea v-model="reviewToUpdate.review_text" id="update_review_text"></textarea>
+                    </div>
+                    <div class="inputs">
+                        <label for="update_rating">Rating (1-5):</label>
+                        <input type="number" v-model="reviewToUpdate.rating" id="update_rating" min="1" max="5" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Save Changes</button>
+                </div>
+                <div v-else><p>Loading review for update...</p></div>
+            </form>
+        </div>
+    </div>
+    <div class="heading" v-if="Reviews && Reviews.length > 0">
         <table class="table">
             <thead>
                 <tr>
                     <th class="h-row" scope="col">#</th>
-                    <th class="h-row" scope="col">ID</th>
-                    <th class="h-row" scope="col">Name</th>
+                    <th class="h-row" scope="col">Employee ID</th>
+                    <th class="h-row" scope="col">Employee Name</th>
                     <th class="h-row" scope="col">Role</th>
-                    <th class="h-row" scope="col">contact</th>
+                    <th class="h-row" scope="col">Review Date</th>
                     <th class="h-row" scope="col">rating</th>
+                    <th class="h-row" scope="col">Review</th>
+                    <th class="h-row" scope="col"></th>
+                    <th class="h-row" scope="col"></th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(stats,idx) in employee_info" :key="stats.employeeId">
-                    <th scope="row">{{ stats.employeeId }}</th>
-                    <td>{{ emplyeeRating[idx].workID }}</td>
-                    <td>{{ stats.name }}</td>
-                    <td>{{ stats.position }}</td>
-                    <td>{{ stats.contact }}</td>
-                    <td>{{ emplyeeRating[idx].rating }}</td>
+                <tr v-for="review in Reviews" :key="review_id">
+                    <th scope="row">{{ review.review_id }}</th>
+                    <td>{{ review.emp_id }}</td>
+                    <td>{{ review.name }}</td>
+                    <td>{{ review.department_name }}</td>
+                    <td>{{ review.review_date }}</td>
+                    <td>{{ review.rating }}</td>
+                    <td>
+                        <div class="view view-wrap" @click="showReviewDetails(review.review_id)">View</div>
+                    </td>
+                    <td>
+                        <div class="view view-wrap" @click="showUpdateDetails(review.review_id)">Update</div>
+                    </td>
+                    <td>
+                        <div class="view-wrap delete-btn" @click="confirmDelete(review.review_id)">
+                            Delete
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -64,57 +153,127 @@
 </template>
 
 <script>
-import employee_info from '@/data/employee_info';
 export default {
     name: 'ReviewComp',
     data() {
-        return{
-            employee_info:employee_info,
-            emplyeeRating: [
-                {
-                    rating: 8.3,
-                    workID: 'EMP-909636'
-                },
-                {
-                    rating: 7.7,
-                    workID: 'EMP-909665'
-                },
-                {
-                    rating: 8.6,
-                    workID: 'EMP-909678'
-                },
-                {
-                    rating: 9.2,
-                    workID: 'EMP-909623'
-                },
-                {
-                    rating: 7.9,
-                    workID: 'EMP-909987'
-                },
-                {
-                    rating: 8.5,
-                    workID: 'EMP-909665'
-                },
-                {
-                    rating: 9.1,
-                    workID: 'EMP-909995'
-                },
-                {
-                    rating: 8.0,
-                    workID: 'EMP-909623'
-                },
-                {
-                    rating: 7.9,
-                    workID: 'EMP-900086'
-                },
-                {
-                    rating: 9.5,
-                    workID: 'EMP-909838'
-                },
-                
-            ]
+        return {
+            showAddModal: false,    
+            showViewModal: false,
+            showUpdateModal: false,
+            reviewToUpdate: null,
+            newReviewEntry: {
+                emp_id: '',
+                reviewer_emp_id: '',
+                department_id: null,
+                review_date: '',
+                review_text: '',
+                rating: null
+            },
+            selectedReview: null
+        };
+    },
+    computed: {
+        Reviews(){
+            const reviewsData = this.$store.state.reviews;
+            console.log("Reviews computed property data:", reviewsData);
+            return reviewsData;
+        },
+        averageRating() {
+            if (this.Reviews && Array.isArray(this.Reviews) && this.Reviews.length > 0) {
+                const totalRating = this.Reviews.reduce((sum, review) => {
+                    return sum + (typeof review.rating === 'number' ? review.rating : 0);
+                }, 0);
+                return totalRating / this.Reviews.length;
+            }
+            return 0;
         }
     },
+    methods: {
+        confirmDelete(review_id) {
+            if (window.confirm(`Are you sure you want to delete review ID: ${review_id}?`)) {
+                this.deleteReview(review_id);
+            }
+        },
+        async deleteReview(review_id) {
+            try {
+                await this.$store.dispatch('deleteReview', { review_id: review_id });
+                await this.$store.dispatch('getAllReviewsWithAllDetails');
+                console.log(`Review for ${review_id} deleted successfully.`);
+            } catch (error) {
+                console.error("Failed to delete review:", error);
+            }
+        },
+        closeAddModal() {
+            this.showAddModal = false;
+            this.newReviewEntry = {
+                emp_id: '',
+                reviewer_emp_id: '',
+                department_id: null,
+                review_date: '',
+                review_text: '',
+                rating: null
+            };
+        },
+        async showReviewDetails(review_id) {
+            this.selectedReview = null; 
+            this.showViewModal = true; 
+            try {
+                const reviewDetails = await this.$store.dispatch('getReviewById', review_id);
+                this.selectedReview = reviewDetails; 
+            } catch (error) {
+                console.error('Error fetching review details:', error);
+                this.selectedReview = { error: 'Could not load review details.' }; 
+                alert(`Failed to load review details: ${error.message}`); 
+            }
+        },
+        closeViewModal() {
+            this.showViewModal = false;
+            this.selectedReview = null; 
+        },
+        async addReviewEntry() {
+            await this.$store.dispatch('addReview', this.newReviewEntry);
+            console.log('Review added successfully!');
+            await this.$store.dispatch('getAllReviewsWithAllDetails');
+            this.closeViewModal();
+        },
+        async showUpdateDetails(review_id) {
+            this.reviewToUpdate = null;
+            this.showUpdateModal = true;
+
+            try {
+                const reviewDetails = await this.$store.dispatch('getReviewById', review_id);
+                this.reviewToUpdate = {...reviewDetails};
+            } catch (e) {
+                console.error('Error fetching review details for update: ', e);
+                alert('Failed to load review for update');
+                this.closeUpdateModal();
+            }
+        },
+        closeUpdateModal() {
+            this.showUpdateModal = false;
+            this.reviewToUpdate = null;
+        },
+        async updateReviewEntry() {
+            if (!this.reviewToUpdate || !this.reviewToUpdate.review_id) {
+                console.error('No review selected for update');
+                alert('No review selected for update');
+                return;
+            }
+
+            try {
+                await this.$store.dispatch('updateReview', this.reviewToUpdate);
+                console.log('Review ${this.reviewToUpdate.review_id} updated successfully!');
+                await this.$store.dispatch('getAllReviewsWithAllDetails');
+                this.closeUpdateModal();
+            } catch (e) {
+                console.error('Error updating review: ', e);
+                alert('Failed to update review');
+            }
+        }
+    },
+    mounted() {
+        this.$store.dispatch('getAllReviewsWithAllDetails');
+    }
 }
 
 </script>
@@ -130,6 +289,8 @@ export default {
     height: 500px;
     margin-left: 15%;
     margin-top: 20px;
+    max-width: 100vw;
+    overflow-x: auto;
 }
 .table {
     width: 100%;
@@ -238,6 +399,17 @@ td {
 h3{
     font-size: 40px;
     color: #2c3e50;
+}
+.reviewDetails {
+    font-weight: 400;
+    font-size: 20px;
+}
+.inputs textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 @media screen and (max-width: 768px) {
     .r1-title{

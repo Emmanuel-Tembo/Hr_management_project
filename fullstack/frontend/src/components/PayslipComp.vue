@@ -11,16 +11,17 @@
         <div class="heading-top">
             <h1>ModernTech Solutions</h1> <br>
             <h3 class="payslip">PAYSLIP</h3>
-            <p style="font-weight: 400; font-size: 20px;">Pay Date: 31 July 2025</p> <br> <br>
+            <p style="font-weight: 400; font-size: 20px;">Pay Date: {{salary?.effective_date || "N/A"}}</p> <br> <br>
         </div>
 
-        <div v-if="employee">
+        <div v-if="salary && bank && tax">
             <!-- EMPLOYEE INFORMATION -->
             <div class="emp-info">
-                <p>Employee name: {{ employee.name }}</p>
-                <p>ID Number: </p>
-                <p>Bank Details: </p>
-                <p>Tax Number: </p>
+                <p>Employee ID: {{salary.emp_id}}</p>
+                <p>Employee Name: {{ salary.name }}</p>
+                <p>Bank Name: {{bank.bank_name}}</p>
+                <p>Account Number: {{bank.bank_account_number}}</p>
+                <p>Tax Number: {{tax.tax_code}}</p>
             </div>
             <br>
 
@@ -38,7 +39,7 @@
                         <tbody>
                             <tr>
                                 <td>Basic</td>
-                                <td>R{{ employee.salary.toFixed(2) }}</td>
+                                <td>R{{salary.base_salary}}</td>
                             </tr>
                             <tr>
                                 <td>Bonus</td>
@@ -60,11 +61,11 @@
                         <tbody>
                             <tr>
                                 <td>Deductions</td>
-                                <td>R{{ deduction.toFixed(2) }}</td>
+                                <td>R{{salary.deductions}}</td>
                             </tr>
                             <tr>
                                 <td>Taxes</td>
-                                <td>R#</td>
+                                <td>R{{tax.tax_amount || "0.00"}}</td>
                             </tr>
                             <tr style="height: 30px;">
                                 <td></td>
@@ -76,17 +77,17 @@
                         <thead class="totals-head">
                             <tr>
                                 <th>Total Deductions</th>
-                                <th>R{{ deduction.toFixed(2) }}</th>
+                                <th>R{{salary.deductions}}</th>
                             </tr>
                             <tr>
                                 <th>Salary</th>
-                                <th>R{{ employee.finalSalary.toFixed(2) }}</th>
+                                <th>R{{salary.final_salary}}</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
                 <div>
-                    <p class="estimated"><i>Estimated annual salary: R{{ estimatedAnnual.toFixed(2) }}</i></p>
+                    <p class="estimated"><i>Estimated annual salary: R{{getAnnualSalary(salary.final_salary)}}</i></p>
                 </div>
             </div>
         </div> <br> <br> <br>
@@ -101,32 +102,45 @@
 </template>
 
 <script>
-import payrollData from '@/data/payrollData';
+import axios from 'axios';
 
 export default {
     data() {
         return {
-            payrollData,
-            employee: null
+            salary: null,
+            bank: null,
+            tax: null
         }
     },
-    created() {
-        // runs automatically on component creation
-        const employeeId = parseInt(this.$route.params.id)
-        this.employee = this.payrollData.find(emp => emp.employeeId === employeeId)
-    },
-    computed: {
-        deduction() {
-            if (this.employee) {
-                return this.employee.salary - this.employee.finalSalary
+    watch: {
+        '$route.params': {
+            immediate: true,
+            handler(newParams) {
+                this.loadPayslipData(newParams.emp_id, newParams.effective_date);
             }
+        }
+    },
+    methods: {
+        async loadPayslipData(emp_id, effective_date) {
+            try {
+            const [salaryRes, bankRes, taxRes] = await Promise.all([
+                axios.get(`http://localhost:3030/api/salaries/${emp_id}/${effective_date}`),
+                axios.get(`http://localhost:3030/api/bankinfo/${emp_id}`),
+                axios.get(`http://localhost:3030/api/taxinfo/${emp_id}`)
+            ]);
+
+            this.salary = salaryRes.data;
+            this.bank = bankRes.data.bankInfo;
+            this.tax = taxRes.data.taxInfo;
+        } catch (e) {
+            console.error("Error loading payslip data: ", e)
+        }
         },
-        estimatedAnnual() {
-            if (this.employee) {
-                return this.employee.finalSalary * 12
-            }
+        getAnnualSalary(finalSalary){
+            if (!finalSalary) return '0.00';
+            return (parseFloat(finalSalary) * 12).toFixed(2);
         }
-    }
+    },
 }
 </script>
 

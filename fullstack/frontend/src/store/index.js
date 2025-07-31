@@ -8,7 +8,9 @@ export default createStore({
     LeaveRecords: null,        // For all/filtered leave (main table)
     PendingLeaveStats: null,   // For pending leave count/list (dashboard)
     ApprovedLeaveStats: null,
-    DeniedLeaveStats: null 
+    DeniedLeaveStats: null,
+    salaries: null,
+    reviews: null
   },
   getters: {
     allLeaveCount: (state) => state.LeaveRecords ? state.LeaveRecords.length : 0,
@@ -106,6 +108,12 @@ export default createStore({
       // Note: Re-fetching the full lists after update (via dispatch in action)
       // is generally more robust for complex state changes than trying to
       // meticulously update all derived states here.
+    },
+    setSalaries(state, payload){
+      state.salaries = payload
+    },
+    setReviews(state, payload){
+      state.reviews = payload
     }
   },
   actions: {
@@ -194,6 +202,70 @@ export default createStore({
       } catch (error) {
         console.error("Error updating leave status:", error.response ? error.response.data : error.message);
         return false; // Indicate failure
+      }
+    },
+    async getAllSalaries({commit}) {
+      try {
+        let response = await axios.get('http://localhost:3030/api/salaries');
+        commit('setSalaries',response.data);
+      } catch (e) {
+        console.error("Error fetching salaries:", e);
+      }
+    },
+    async deleteSalary({ commit }, { emp_id, effective_date }) {
+      try {
+        await axios.delete(`http://localhost:3030/api/salaries/${emp_id}/${effective_date}`);
+        console.log(`Successfully sent delete request for ${emp_id} on ${effective_date}`);
+      } catch (error) {
+        console.error("Error deleting salary record:", error);
+        throw error;
+      }
+    },
+    async getAllReviewsWithAllDetails({commit}) {
+      try {
+        let response = await axios.get('http://localhost:3030/api/reviews');
+        console.log("API Response Data for Reviews:", response.data);
+        commit('setReviews',response.data);
+      } catch (e) {
+        console.error("Error fetching reviews:", e);
+      }
+    },
+    async addReview({ commit }, review) {
+      try {
+        const response = await axios.post('http://localhost:3030/api/reviews', review);
+        console.log("Review added successfully via API:", response.data);
+      } catch (error) {
+        console.error("Error adding review:", error.response ? error.response.data : error.message);
+        throw error; 
+      }
+    },
+    async deleteReview({ commit }, { review_id }) {
+      try {
+        await axios.delete(`http://localhost:3030/api/reviews/${review_id}`);
+        console.log(`Successfully sent delete request for ${review_id}`);
+      } catch (error) {
+        console.error("Error deleting review:", error);
+        throw error;
+      }
+    },
+    async updateReview({ commit }, reviewData) {
+      try {
+        const review_id = reviewData.review_id;
+        const response = await axios.put(`http://localhost:3030/api/reviews/${review_id}`, reviewData);
+        console.log(`Successfully sent update request for ${review_id}`, response.data);
+      } catch (error) {
+        console.error("Error updating review:", error);
+        throw error;
+      }
+    },
+    async getReviewById({ commit }, review_id) {
+      try {
+        const response = await axios.get(`http://localhost:3030/api/reviews/${review_id}`);
+        console.log("Fetched single review details:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching single review:");
+        throw error; 
       }
     }
   },
