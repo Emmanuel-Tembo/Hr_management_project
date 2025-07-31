@@ -39,7 +39,7 @@ const routes = [
     component: Payroll
   },
   {
-    path: '/payslip/:id',
+    path: '/payslip/:emp_id/:effective_date',
     name: 'PayslipComp',
     component: PayslipComp 
   },

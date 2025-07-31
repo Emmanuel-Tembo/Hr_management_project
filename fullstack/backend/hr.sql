@@ -27,42 +27,35 @@ CREATE TABLE EmployeeData (
     CONSTRAINT FK_EmployeeData_Department FOREIGN KEY (department_id) REFERENCES Department(department_id)
 );
 -- Insert into employee_data with new EMP-xxx IDs
-INSERT INTO EmployeeData (emp_id, name, department_id, position)
+INSERT INTO EmployeeData (emp_id, name, department_id, position, reviewer_emp_id)
 VALUES
-    ('EMP-700', 'Sibongile Nkosi', 101, 'Software Engineer'),
-    ('EMP-701', 'Lungile Moyo', 102, 'HR Manager'),
-    ('EMP-702', 'Thabo Molefe', 103, 'Quality Analyst'),
-    ('EMP-703', 'Keshav Naidoo', 104, 'Sales Representative'),
-    ('EMP-704', 'Zanele Khumalo', 105, 'Marketing Specialist'),
-    ('EMP-705', 'Sipho Zulu', 106, 'UI/UX Designer'),
-    ('EMP-706', 'Naledi Moeketsi', 107, 'DevOps Engineer'),
-    ('EMP-707', 'Farai Gumbo', 105, 'Content Strategist'),
-    ('EMP-708', 'Karabo Dlamini', 108, 'Accountant'),
-    ('EMP-709', 'Fatima Patel', 109, 'Customer Support Lead');
+    ('EMP-700', 'Sibongile Nkosi', 101, 'Software Engineer', 'EMP-700'),
+    ('EMP-701', 'Lungile Moyo', 102, 'HR Manager', 'EMP-701'),
+    ('EMP-702', 'Thabo Molefe', 103, 'Quality Analyst', 'EMP-702'),
+    ('EMP-703', 'Keshav Naidoo', 104, 'Sales Representative', NULL),
+    ('EMP-704', 'Zanele Khumalo', 105, 'Marketing Specialist', NULL),
+    ('EMP-705', 'Sipho Zulu', 106, 'UI/UX Designer', NULL),
+    ('EMP-706', 'Naledi Moeketsi', 107, 'DevOps Engineer', NULL),
+    ('EMP-707', 'Farai Gumbo', 105, 'Content Strategist', NULL),
+    ('EMP-708', 'Karabo Dlamini', 108, 'Accountant', NULL),
+    ('EMP-709', 'Fatima Patel', 109, 'Customer Support Lead', 'EMP-709');
     
-    UPDATE EmployeeData
-SET reviewer_emp_id = 'EMP-701' -- Lungile Moyo
-WHERE emp_id IN ('EMP-700', 'EMP-702', 'EMP-703', 'EMP-704');
-
-UPDATE EmployeeData
-SET reviewer_emp_id = 'EMP-700' -- Sibongile Nkosi
-WHERE emp_id IN ('EMP-705', 'EMP-706', 'EMP-707', 'EMP-708', 'EMP-709');
 
 -- New table for dedicated department reviewers
 CREATE TABLE Reviewers (
-    reviewer_id INT PRIMARY KEY AUTO_INCREMENT,
+    reviewer_emp_id VARCHAR(20) PRIMARY KEY,
     emp_id VARCHAR(20) UNIQUE NOT NULL, -- Changed to VARCHAR
     department_id INT UNIQUE NOT NULL,
     CONSTRAINT FK_Reviewers_EmployeeData FOREIGN KEY (emp_id) REFERENCES EmployeeData(emp_id),
     CONSTRAINT FK_Reviewers_Department FOREIGN KEY (department_id) REFERENCES Department(department_id)
 );
 
-INSERT INTO Reviewers (emp_id, department_id)
+INSERT INTO Reviewers (reviewer_emp_id, emp_id, department_id)
 VALUES
-    ('EMP-701', 102), -- Lungile Moyo
-    ('EMP-700', 101), -- Sibongile Nkosi
-    ('EMP-702', 103), -- Thabo Molefe
-    ('EMP-709', 109); -- Fatima Patel
+    ('EMP-701', 'EMP-701', 102), -- Lungile Moyo
+    ('EMP-700', 'EMP-700', 101), -- Sibongile Nkosi
+    ('EMP-702', 'EMP-702', 103), -- Thabo Molefe
+    ('EMP-709', 'EMP-709', 109); -- Fatima Patel
 
 CREATE TABLE Contact (
     emp_id VARCHAR(20) PRIMARY KEY NOT NULL,
@@ -141,6 +134,7 @@ CREATE TABLE Reviews (
     review_id INT PRIMARY KEY AUTO_INCREMENT,
     emp_id VARCHAR(20) NOT NULL, -- Changed to VARCHAR
     reviewer_emp_id VARCHAR(20) NOT NULL, -- Changed to VARCHAR
+    department_id INT NOT NULL,
     review_date DATE NOT NULL,
     review_text TEXT NULL,
     rating INT DEFAULT 1,
@@ -148,18 +142,18 @@ CREATE TABLE Reviews (
     CONSTRAINT FK_Reviews_ReviewerEmp FOREIGN KEY (reviewer_emp_id) REFERENCES EmployeeData(emp_id),
     UNIQUE (emp_id, reviewer_emp_id, review_date)
 );
-INSERT INTO Reviews (emp_id, reviewer_emp_id, review_date, review_text, rating)
+INSERT INTO Reviews (emp_id, reviewer_emp_id, department_id, review_date, review_text, rating)
 VALUES
-    ('EMP-700', 'EMP-701', '2025-06-15', 'Excellent performance, consistently exceeds expectations.', 5),
-    ('EMP-702', 'EMP-701', '2025-06-16', 'Good progress, areas for improvement in communication.', 4),
-    ('EMP-703', 'EMP-701', '2025-06-17', 'Met all sales targets, strong team player.', 4),
-    ('EMP-704', 'EMP-701', '2025-06-18', 'Creative and innovative, needs to improve project deadlines.', 3),
-    ('EMP-705', 'EMP-700', '2025-06-19', 'Strong design skills, very reliable.', 4),
-    ('EMP-706', 'EMP-700', '2025-06-20', 'Technical expert, could improve documentation.', 4),
-    ('EMP-707', 'EMP-700', '2025-06-21', 'Achieved all content goals, proactive in new initiatives.', 5),
-    ('EMP-708', 'EMP-700', '2025-06-22', 'Detail-oriented and accurate, good with financial reporting.', 4),
-    ('EMP-709', 'EMP-700', '2025-06-23', 'Exceptional customer service, natural leader.', 5),
-    ('EMP-702', 'EMP-701', '2024-12-01', 'Mid-year check-in, showing good development.', 4);
+    ('EMP-700', 'EMP-701', '101', '2025-06-15', 'Excellent performance, consistently exceeds expectations.', 5),
+    ('EMP-702', 'EMP-701', '102', '2025-06-16', 'Good progress, areas for improvement in communication.', 4),
+    ('EMP-703', 'EMP-701', '103', '2025-06-17', 'Met all sales targets, strong team player.', 4), 
+    ('EMP-704', 'EMP-701', '104', '2025-06-18', 'Creative and innovative, needs to improve project deadlines.', 3),
+    ('EMP-705', 'EMP-700', '105', '2025-06-19', 'Strong design skills, very reliable.', 4),
+    ('EMP-706', 'EMP-700', '106', '2025-06-20', 'Technical expert, could improve documentation.', 4),
+    ('EMP-707', 'EMP-700', '107', '2025-06-21', 'Achieved all content goals, proactive in new initiatives.', 5),
+    ('EMP-708', 'EMP-700', '105', '2025-06-22', 'Detail-oriented and accurate, good with financial reporting.', 4),
+    ('EMP-709', 'EMP-700', '108', '2025-06-23', 'Exceptional customer service, natural leader.', 5),
+    ('EMP-702', 'EMP-701', '109', '2024-12-01', 'Mid-year check-in, showing good development.', 4);
 
 -- PAYMENT AND ATTENDANCE
 CREATE TABLE Attendance (
@@ -287,16 +281,16 @@ CREATE TABLE Salary (
 
 INSERT INTO Salary (emp_id, effective_date, department_id, hours_worked, deductions, base_salary, final_salary)
 VALUES
-    ('EMP-700', '2025-07-01', 101, 160, 240.00, 70000.00, 69760.00),
-    ('EMP-701', '2025-07-01', 102, 150, 300.00, 80010.00, 79710.00),
-    ('EMP-702', '2025-07-01', 103, 170, 120.00, 54995.00, 54875.00),
-    ('EMP-703', '2025-07-01', 104, 165, 180.00, 60060.00, 59880.00),
-    ('EMP-704', '2025-07-01', 105, 158, 150.00, 56643.00, 56493.00),
-    ('EMP-705', '2025-07-01', 106, 168, 60.00, 65016.00, 64956.00),
-    ('EMP-706', '2025-07-01', 107, 175, 90.00, 71995.00, 71905.00),
-    ('EMP-707', '2025-07-01', 105, 160, 0.00, 57360.00, 57360.00),
-    ('EMP-708', '2025-07-01', 108, 155, 150.00, 62000.00, 61850.00),
-    ('EMP-709', '2025-07-01', 109, 162, 120.00, 58320.00, 58200.00);
+    ('EMP-700', '2025-07-31', 101, 160, 240.00, 70000.00, 69760.00),
+    ('EMP-701', '2025-07-31', 102, 150, 300.00, 80010.00, 79710.00),
+    ('EMP-702', '2025-07-31', 103, 170, 120.00, 54995.00, 54875.00),
+    ('EMP-703', '2025-07-31', 104, 165, 180.00, 60060.00, 59880.00),
+    ('EMP-704', '2025-07-31', 105, 158, 150.00, 56643.00, 56493.00),
+    ('EMP-705', '2025-07-31', 106, 168, 60.00, 65016.00, 64956.00),
+    ('EMP-706', '2025-07-31', 107, 175, 90.00, 71995.00, 71905.00),
+    ('EMP-707', '2025-07-31', 105, 160, 0.00, 57360.00, 57360.00),
+    ('EMP-708', '2025-07-31', 108, 155, 150.00, 62000.00, 61850.00),
+    ('EMP-709', '2025-07-31', 109, 162, 120.00, 58320.00, 58200.00);
 
 CREATE TABLE EmployeeBankInfo (
     bank_account_number VARCHAR(50) PRIMARY KEY,
@@ -316,7 +310,7 @@ VALUES
     ('70070070070', 'EMP-706', 'African Bank'),
     ('80080080080', 'EMP-707', 'FNB'),
     ('90090090090', 'EMP-708', 'Standard Bank'),
-    ('10101010100', 'EMP-709', 'Absa');
+	('11111111111', 'EMP-709', 'Absa');
 
 CREATE TABLE EmployeeTax (
     tax_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -338,5 +332,11 @@ VALUES
     ('EMP-708', 'TAXJ9012345'),
     ('EMP-709', 'TAXK0123456');
 
-
+CREATE TABLE users (
+  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  emp_id VARCHAR(20) UNIQUE NOT NULL,
+  username VARCHAR(100) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  CONSTRAINT FK_users_EmpData FOREIGN KEY (emp_id) REFERENCES EmployeeData(emp_id)
+);
 
