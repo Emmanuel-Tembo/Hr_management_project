@@ -152,14 +152,8 @@
                     }
                 } catch (e) {
                 this.registerError = true;
-                // Use the message from the backend's error response
                 this.registerErrorMessage = e.response ? e.response.data.message : 'An unexpected error occurred during registration.';
-            }
-
-                this.registerSuccess = true;
-                this.registerError = false; 
-
-                
+                }
             }
         },
         watch: {
