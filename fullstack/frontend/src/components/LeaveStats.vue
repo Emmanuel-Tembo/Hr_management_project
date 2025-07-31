@@ -1,30 +1,33 @@
 <template>
-    <div class="card2">
-        <div class="cardtop">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <div>
-                <h3>Pending Leave Requests</h3>
-                <p class="date">Date: {{ displayDate }}</p>
+                <h3 class="mb-0">Pending Leave Requests</h3>
+                <p class="text-muted mb-0">Date: {{ displayDate }}</p>
             </div>
             <router-link to="/leaveform">
-                <button>See all</button>
+                <button class="btn btn-primary btn-sm">See all</button>
             </router-link>
         </div>
-        <div class="leaveCard" v-for="leaveRequest in topPendingLeaveRequests" :key="leaveRequest.leave_id">
-            <div class="Laeveimg">
-                <img src="https://icon2.cleanpng.com/20180425/qtq/avtpmxje6.webp" alt="Employee Profile Picture">
+        
+        <div class="card-body overflow-auto" style="max-height: 200px;"> 
+            <div class="d-flex align-items-center mb-3" v-for="leaveRequest in topPendingLeaveRequests" :key="leaveRequest.leave_id">
+                <div class="flex-shrink-0 me-3">
+                    <img src="https://icon2.cleanpng.com/20180425/qtq/avtpmxje6.webp" alt="Employee Profile Picture" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                </div>
+                <div class="flex-grow-1 me-3">
+                    <h5 class="mb-1">{{ leaveRequest.name }}</h5>
+                    <p class="text-muted mb-0">Reason: {{ leaveRequest.reason }}</p>
+                </div>
+                <div class="text-end">
+                    <p class="statusDecoration" :style="getLeaveStatusStyle(leaveRequest.status)">
+                        {{ leaveRequest.status }}
+                    </p>
+                </div>
             </div>
-            <div class="leaveRow">
-                <h5>{{ leaveRequest.name }}</h5>
-                <p class="rsn-txt">Reason: {{ leaveRequest.reason }}</p>
+            <div v-if="!topPendingLeaveRequests.length" class="text-center text-muted py-4">
+                No pending leave requests at the moment.
             </div>
-            <div class="leaveResponse">
-                <p class="statusDecoration" :style="getLeaveStatusStyle(leaveRequest.status)">
-                    {{ leaveRequest.status }}
-                </p>
-            </div>
-        </div>
-        <div v-if="!topPendingLeaveRequests.length" class="no-pending-requests">
-            No pending leave requests at the moment.
         </div>
     </div>
 </template>

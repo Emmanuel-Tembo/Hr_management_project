@@ -52,10 +52,9 @@
 import { mapState, mapActions } from 'vuex'; // Import mapActions
 
 export default {
-    // Component's local reactive data
     data() {
         return {
-            selectDate: '' // Initialize for the date input
+            selectDate: ''
         };
     },
     computed: {
@@ -74,7 +73,6 @@ export default {
             return this.generalAttendance;
         }
     },
-    // Lifecycle hook: called after the component is inserted into the DOM
     mounted() {
         // Dispatch the action to fetch general attendance data when component mounts
         // This populates the table initially when no date is selected.

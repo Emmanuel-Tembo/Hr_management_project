@@ -4,7 +4,7 @@
             <i class="i-arrow fa fa-arrow-left fa-lg" aria-hidden="true"></i>
         </router-link>
     </div> -->
-    <h1 class="pageTitle">This is the overeall attendance</h1>
+    <h1 class="text-center">This is the overeall attendance</h1>
     <EmployeeOverallAttendance />
     <SideBar />
 </template>
@@ -23,9 +23,6 @@ export default {
 }
 </script>
 <style>
-    .pageTitle{
-        text-align: center;
-    }
     .btn-return{
         margin-left: 210px;
         height: 50px;
