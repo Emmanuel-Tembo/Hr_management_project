@@ -5,8 +5,8 @@ export default createStore({
   state: {
     Attendance: null,
     AttendanceByDate: null,
-    LeaveRecords: null,        // For all/filtered leave (main table)
-    PendingLeaveStats: null,   // For pending leave count/list (dashboard)
+    LeaveRecords: null,        
+    PendingLeaveStats: null,   
     ApprovedLeaveStats: null,
     DeniedLeaveStats: null,
     salaries: null,
@@ -20,18 +20,16 @@ export default createStore({
     approvedLeaveCount: (state) => state.ApprovedLeaveStats ? state.ApprovedLeaveStats.length : 0,
     deniedLeaveCount: (state) => state.DeniedLeaveStats ? state.DeniedLeaveStats.length : 0,
 
-    // Getter to get unique employees from leave records for your main table display
-    // This will help in merging data for your table structure
     uniqueEmployeesWithLeave: (state) => {
         if (!state.LeaveRecords) return [];
 
-        const employeesMap = new Map(); // Map to store unique employees
+        const employeesMap = new Map(); 
 
         state.LeaveRecords.forEach(record => {
             if (!employeesMap.has(record.emp_id)) {
                 employeesMap.set(record.emp_id, {
                     emp_id: record.emp_id,
-                    name: record.EmployeeName, // Assuming EmployeeName comes from the join
+                    name: record.EmployeeName, 
                     leaveRequests: []
                 });
             }
@@ -68,7 +66,6 @@ export default createStore({
             });
         });
 
-        // Sort leave requests within each employee's array, e.g., by start_date
         employeesMap.forEach(employee => {
             employee.leaveRequests.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
         });
@@ -80,7 +77,6 @@ export default createStore({
     SetAttendance(state,payload){
       state.Attendance = payload
     },
-    // NEW MUTATION: To set the attendance data fetched by date
     SetAttendanceByDate(state, payload){
       state.AttendanceByDate = payload
     },
@@ -90,26 +86,21 @@ export default createStore({
     SetPendingLeaveStats(state, payload){
       state.PendingLeaveStats = payload
     },
-    SetApprovedLeaveStats(state, payload){ // NEW MUTATION
+    SetApprovedLeaveStats(state, payload){ 
       state.ApprovedLeaveStats = payload
     },
-    SetDeniedLeaveStats(state, payload){ // NEW MUTATION
+    SetDeniedLeaveStats(state, payload){ 
       state.DeniedLeaveStats = payload
     },
     // Mutation to update a single leave record's status in the store
-    // This is for optimistic UI updates before re-fetching all data
     UpdateLeaveRecordStatus(state, { leave_id, new_status }) {
       if (state.LeaveRecords) {
         const recordIndex = state.LeaveRecords.findIndex(record => record.leave_id === leave_id);
         if (recordIndex !== -1) {
           state.LeaveRecords[recordIndex].leave_status = new_status;
-          // To ensure reactivity in Vue 2 if not working automatically:
-          // Vue.set(state.LeaveRecords, recordIndex, { ...state.LeaveRecords[recordIndex], leave_status: new_status });
+          
         }
       }
-      // Note: Re-fetching the full lists after update (via dispatch in action)
-      // is generally more robust for complex state changes than trying to
-      // meticulously update all derived states here.
     },
     setSalaries(state, payload){
       state.salaries = payload
@@ -147,25 +138,23 @@ export default createStore({
     },
     async getAttendanceByDate({ commit }, date = null){
       try {
-        let url = 'http://localhost:3030/attendancedate'; // CORRECTED PORT TO 3030
+        let url = 'http://localhost:3030/attendancedate'; 
 
         if (date) {
-          url += `?date=${date}`; // Append the date as a query parameter if provided
+          url += `?date=${date}`; 
         }
         
         let response = await axios.get(url);
         
-        // Corrected data access based on backend's getAttendanceRecords: res.json({ data: ... })
         commit('SetAttendanceByDate', response.data.data); 
       } catch(e){
         console.error("Error fetching attendance by date:", e);
-        // Important: If there's an error (e.g., no data for date), ensure state is cleared or handled
-        commit('SetAttendanceByDate', []); // Clear data on error for user feedback
+        commit('SetAttendanceByDate', []); 
       }
     },
     async getLeaveRecords({ commit }){
       try {
-        let response = await axios.get('http://localhost:3030/leave'); // Fetch all by default
+        let response = await axios.get('http://localhost:3030/leave'); 
         commit('SetLeaveRecords', response.data.data);
       } catch(e){
         console.error("Error fetching all leave records:", e);
@@ -183,20 +172,16 @@ export default createStore({
         commit('SetPendingLeaveStats', []);
       }
     },
-    // You'll need backend endpoints for 'approved' and 'denied' too if you want these exact actions
-    // For now, let's assume we filter from getLeaveRecords or create new backend routes like /leave/approved
-     async getApprovedLeaveStats({ commit, state, dispatch }){ // ADD dispatch here
-        // For simplicity, let's filter from all leave records for now if no specific backend route exists
+     async getApprovedLeaveStats({ commit, state, dispatch }){
         if (!state.LeaveRecords) {
-            await dispatch('getLeaveRecords'); // Now dispatch is defined
+            await dispatch('getLeaveRecords'); 
         }
         const approved = state.LeaveRecords.filter(record => record.leave_status === 'Approved');
         commit('SetApprovedLeaveStats', approved);
     },
-    async getDeniedLeaveStats({ commit, state, dispatch }){ // ADD dispatch here
-        // For simplicity, let's filter from all leave records for now if no specific backend route exists
+    async getDeniedLeaveStats({ commit, state, dispatch }){ 
         if (!state.LeaveRecords) {
-            await dispatch('getLeaveRecords'); // Now dispatch is defined
+            await dispatch('getLeaveRecords'); 
         }
         const denied = state.LeaveRecords.filter(record => record.leave_status === 'Denied');
         commit('SetDeniedLeaveStats', denied);
@@ -211,17 +196,17 @@ export default createStore({
 
         if (response.status === 200) {
           console.log(response.data.message);
-          // After a successful update, re-fetch all relevant data to ensure UI consistency
-          dispatch('getLeaveRecords'); // Re-fetch for the main table
-          dispatch('getPendingLeaveStats'); // Re-fetch pending stats
-          dispatch('getApprovedLeaveStats'); // Re-fetch approved stats
-          dispatch('getDeniedLeaveStats'); // Re-fetch denied stats
           
-          return true; // Indicate success
+          dispatch('getLeaveRecords'); 
+          dispatch('getPendingLeaveStats'); 
+          dispatch('getApprovedLeaveStats'); 
+          dispatch('getDeniedLeaveStats'); 
+          
+          return true; 
         }
       } catch (error) {
         console.error("Error updating leave status:", error.response ? error.response.data : error.message);
-        return false; // Indicate failure
+        return false; 
       }
     },
     async getAllSalaries({commit}) {
@@ -291,7 +276,7 @@ export default createStore({
     async getEmp({ commit }) {
   try {
     let { data } = await axios.get('http://localhost:3030/Employees')
-    commit('setUsers', data) // Now using data directly
+    commit('setUsers', data) 
   } catch (error) {
     console.error("Error fetching employees:", error)
     return error
