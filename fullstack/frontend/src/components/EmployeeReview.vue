@@ -79,21 +79,18 @@ export default {
 </script>
 
 <style>
-/* --- New Keyframes Animation for sliding in from the RIGHT, same speed --- */
 @keyframes slideInFromRightSpeed {
     0% {
-        transform: translateX(100%); /* Starts 100% of its own width off-screen to the RIGHT */
-        opacity: 0; /* Starts invisible */
+        transform: translateX(100%); 
+        opacity: 0; 
     }
     100% {
-        transform: translateX(0); /* Ends at its normal position */
-        opacity: 1; /* Ends fully visible */
+        transform: translateX(0); 
+        opacity: 1; 
     }
 }
 
-/* Apply the animation to the ReviewCard */
 .ReviewCard {
-    /* Existing styles */
     background-color: white;
     margin-left: 10px;
     width: 400px;
@@ -101,8 +98,7 @@ export default {
     border-radius: 10px;
     box-shadow: 0 4px 16px 0 rgba(8, 14, 20, 0.312);
     border: 1px solid rgba(128, 128, 128, 0.384);
-    /* Apply the animation here */
-    animation: slideInFromRightSpeed 1s ease-out forwards; /* 0.8s duration, same as WelcomeComp */
+    animation: slideInFromRightSpeed 1s ease-out forwards; 
 }
 
 .pfp{

@@ -55,7 +55,7 @@ export default {
 .dash-profile {
     width: 200px;
     border-radius: 10px;
-    margin: 20px;
+    margin-left: 66px;
     box-shadow: 0 4px 16px 0 rgba(8, 14, 20, 0.312);
 }
 

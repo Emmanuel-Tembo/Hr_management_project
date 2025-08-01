@@ -49,8 +49,8 @@
                             </td>
                             <td>
                                 <div class="action-buttons" v-if="employee.leaveRequests[0].status === 'Pending'">
-                                    <button @click="confirmUpdateStatus(employee.leaveRequests[0].leave_id, 'Approved')" class="btn-action approve">Approve</button>
-                                    <button @click="confirmUpdateStatus(employee.leaveRequests[0].leave_id, 'Denied')" class="btn-action deny">Deny</button>
+                                    <button @click="confirmUpdateStatus(employee.leaveRequests[0].leave_id, 'Approved')" class="btn-action approve h-50 m-0">Approve</button>
+                                    <button @click="confirmUpdateStatus(employee.leaveRequests[0].leave_id, 'Denied')" class="btn-action deny h-50 m-0">Deny</button>
                                 </div>
                                 <div v-else>
                                     -
@@ -94,26 +94,16 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 
 export default {
-    name: 'LeaveManagementPage', // Renamed for clarity, adapt as needed
-    // No local data needed, all from Vuex
-    // data() {
-    //     return {
-    //         attendanceAndLeave: null // This will now come from a computed property/getter
-    //     };
-    // },
+    name: 'LeaveManagementPage', 
     computed: {
         ...mapState([
-            // If you need direct access to raw state
-            // 'LeaveRecords',
-            // 'Attendance',
-            // 'AttendanceByDate'
         ]),
         ...mapGetters([
-            'uniqueEmployeesWithLeave', // This getter processes raw LeaveRecords for your table
+            'uniqueEmployeesWithLeave', 
             'pendingLeaveCount',
             'approvedLeaveCount',
-            'deniedLeaveCount', // Your 'Rejected' count
-            'allLeaveCount' // For total if you add a card for it
+            'deniedLeaveCount', 
+            'allLeaveCount' 
         ])
     },
     methods: {
@@ -121,13 +111,13 @@ export default {
             'getLeaveRecords',
             'getPendingLeaveStats',
             'getApprovedLeaveStats',
-            'getDeniedLeaveStats', // Fetch denied stats for 'Rejected' card
+            'getDeniedLeaveStats', 
             'updateLeaveStatus'
         ]),
         getLeaveStatusStyle(status) {
             if (status === 'Approved') {
                 return { backgroundColor: 'green', color: 'white' };
-            } else if (status === 'Denied') { // Changed 'Rejected' to 'Denied' to match backend
+            } else if (status === 'Denied') { 
                 return { backgroundColor: 'red', color: 'white' };
             } else if (status === 'Pending') {
                 return { backgroundColor: 'orange', color: 'white' };
@@ -143,7 +133,6 @@ export default {
 
                 if (success) {
                     alert(`Leave ID ${leave_id} ${new_status} successfully!`);
-                    // The action itself dispatches re-fetches, so UI will update
                 } else {
                     alert(`Failed to ${new_status} leave ID ${leave_id}. Check console for details.`);
                 }
@@ -151,45 +140,33 @@ export default {
         }
     },
     mounted() {
-        // Fetch all necessary data when the component mounts
-        this.getLeaveRecords(); // Populate the main table data
+        this.getLeaveRecords(); 
         this.getPendingLeaveStats();
         this.getApprovedLeaveStats();
-        this.getDeniedLeaveStats(); // Fetch data for the 'Rejected' card
+        this.getDeniedLeaveStats();
     }
 }
 </script>
 
 <style scoped>
-/* Scoped styles - adapted for your new HTML structure */
 
-/* Overall container */
 .leave-div {
-    /* Keep your inline styles or move them here */
     margin-left: 200px;
     padding: 24px;
-    background-color: white; /* Added background for clarity */
-    border-radius: 8px; /* Added some border-radius */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Added subtle shadow */
+    background-color: white; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
 }
 
-/* Headings */
 h1 {
     color: #2c3e50;
     margin-bottom: 20px;
-    font-size: 1.8em; /* Adjust as needed */
+    font-size: 1.8em; 
 }
 
-/* Bootstrap Card Overrides/Enhancements */
-.card {
-    border: 1px solid #dee2e6; /* Default Bootstrap border color */
-    border-radius: 0.25rem; /* Default Bootstrap border radius */
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Subtle shadow */
-    text-align: center;
-}
 
 .card .list-group-item {
-    border: none; /* Remove default list group item borders */
+    border: none; 
     padding: 0.75rem 1.25rem;
 }
 
@@ -197,41 +174,38 @@ h1 {
     font-weight: bold;
     color: #555;
     border-bottom: 1px solid #dee2e6;
-    background-color: #f8f9fa; /* Light background for the header item */
+    background-color: #f8f9fa; 
 }
 
-/* Specific styling for card numbers */
 .card .list-group-item:nth-child(2) {
-    font-size: 2.2em; /* Larger font size for the count */
+    font-size: 2.2em; 
     font-weight: bold;
-    color: #007bff; /* Default color, adjust per status below */
-    padding-top: 0.5rem; /* Spacing below label */
+    color: #007bff; 
+    padding-top: 0.5rem; 
 }
-/* Specific colors for counts */
-.d-flex .card:nth-child(1) .list-group-item:nth-child(2) { /* Approved */
+
+.d-flex .card:nth-child(1) .list-group-item:nth-child(2) { 
     color: green;
 }
-.d-flex .card:nth-child(2) .list-group-item:nth-child(2) { /* Pending */
+.d-flex .card:nth-child(2) .list-group-item:nth-child(2) { 
     color: orange;
 }
-.d-flex .card:nth-child(3) .list-group-item:nth-child(2) { /* Rejected/Denied */
+.d-flex .card:nth-child(3) .list-group-item:nth-child(2) { 
     color: red;
 }
 
 
-/* Table styling - largely retained/refined from your original */
 .table {
-    width: calc(100% - 20px); /* Adjust width to fit container with some margin */
-    margin: 20px auto; /* Centered with top/bottom margin */
-    /* REMOVED: padding-left: 230px; as it's handled by .leave-div margin-left */
-    border-collapse: collapse; /* Ensure clean table borders */
-    box-shadow: 1px 4px 3px 2px rgba(8, 14, 20, 0.312); /* Your original shadow */
+    width: calc(100% - 20px); 
+    margin: 20px auto; 
+    border-collapse: collapse; 
+    box-shadow: 1px 4px 3px 2px rgba(8, 14, 20, 0.312); 
 }
 
 .table .tHead .Hrow {
     background-color: #2c3e50;
     color: white;
-    padding: 12px 8px; /* Consistent padding */
+    padding: 12px 8px; 
     text-align: center;
     border-bottom: 1px solid #2c3e50;
 }
@@ -239,21 +213,21 @@ h1 {
 .table th,
 .table td {
     text-align: center;
-    padding: 10px 8px; /* Consistent padding for cells */
-    border-bottom: 1px solid #ddd; /* Lighter border for rows */
+    padding: 10px 8px; 
+    border-bottom: 1px solid #ddd; 
     font-weight: 400;
-    vertical-align: middle; /* Align content vertically in the middle */
+    vertical-align: middle; 
 }
 
 .table tbody tr:last-child td {
-    border-bottom: none; /* No border for the last row */
+    border-bottom: none; 
 }
 
 .td-background {
     border-radius: 5px;
-    padding: 5px 10px; /* Adjust padding for visual appeal */
-    display: inline-block; /* Makes background only cover content */
-    min-width: 80px; /* Gives consistent width to status cells */
+    padding: 5px 10px; 
+    display: inline-block; 
+    min-width: 80px; 
 }
 
 /* Action Buttons */
@@ -261,7 +235,7 @@ h1 {
     display: flex;
     gap: 5px;
     justify-content: center;
-    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+    flex-wrap: wrap; 
 }
 
 .btn-action {
@@ -274,7 +248,7 @@ h1 {
 }
 
 .btn-action.approve {
-    background-color: #28a745; /* Green */
+    background-color: #28a745; 
     color: white;
 }
 
@@ -284,7 +258,7 @@ h1 {
 }
 
 .btn-action.deny {
-    background-color: #dc3545; /* Red */
+    background-color: #dc3545; 
     color: white;
 }
 
@@ -293,27 +267,26 @@ h1 {
     transform: translateY(-1px);
 }
 
-/* Media Queries for responsiveness */
 @media screen and (max-width: 992px) {
     .leave-div {
-        margin-left: 0; /* Remove fixed margin on smaller screens */
+        margin-left: 0; 
         width: 100%;
         padding: 15px;
     }
     .d-flex.justify-content-between.flex-wrap.gap-3 {
-        justify-content: center !important; /* Center cards on smaller screens */
+        justify-content: center !important; 
     }
     .card {
-        width: 100% !important; /* Make cards full width */
-        max-width: 250px; /* Max width for cards when stacked */
+        width: 100% !important; 
+        max-width: 250px; 
     }
     .table {
-        width: 100%; /* Full width */
+        width: 100%; 
         margin: 15px auto;
     }
     .table th,
     .table td {
-        padding: 8px 5px; /* Reduce table cell padding */
+        padding: 8px 5px; 
         font-size: 0.9em;
     }
     .td-background {
@@ -337,13 +310,13 @@ h1 {
         padding: 6px 4px;
     }
     .action-buttons {
-        flex-direction: column; /* Stack buttons vertically on very small screens */
+        flex-direction: column; 
         gap: 3px;
     }
     .btn-action {
         font-size: 0.7em;
         padding: 4px 6px;
-        width: 100%; /* Make buttons full width when stacked */
+        width: 100%; 
     }
 }
 </style>

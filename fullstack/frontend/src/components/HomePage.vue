@@ -41,6 +41,8 @@ export default {
     border: none;
     border-radius: 15px;
     padding: 4px 10px;
+    width: 200px;
+    height: 50px;
 }
 
 .gstart:hover {

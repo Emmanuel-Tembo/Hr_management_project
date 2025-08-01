@@ -6,7 +6,7 @@
                 <p class="text-muted mb-0 fw-medium">Date: {{ displayDate }}</p>
             </div>
             <router-link to="/leaveform">
-                <button class="btn-primary">See all</button>
+                <button class="btn-primary h-50">See all</button>
             </router-link>
         </div>
 
@@ -109,31 +109,23 @@ export default {
 </script>
 
 <style>
-/* --- New Keyframes Animation for sliding in from the LEFT, slower --- */
 @keyframes slideInFromLeftSlower {
     0% {
         transform: translateX(-100%);
-        /* Starts 100% of its own width off-screen to the LEFT */
         opacity: 0;
-        /* Starts invisible */
     }
 
     100% {
         transform: translateX(0);
-        /* Ends at its normal position */
         opacity: 1;
-        /* Ends fully visible */
     }
 }
 
-/* Apply the animation to the card */
 .card {
     animation: slideInFromLeftSlower 1.2s ease-out forwards;
-    /* 1.2s duration (slower than 0.8s) */
 }
 
 
-/* Existing styles below */
 h3 {
     margin: 5px;
     font-size: 30px;
@@ -189,23 +181,6 @@ button {
 button:hover {
     background-color: rgb(78, 177, 216);
     color: white;
-}
-
-/* Note: 'card2' class is not used in your template's root div,
-   it's just 'card m-2'. Consider removing or renaming this rule if it's unused,
-   or if it was intended for the 'card' class in this component, apply its properties
-   directly to the .card rule above if appropriate. */
-.card2 {
-    margin: 0;
-    width: 450px;
-    height: 350px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 16px 0 rgba(8, 14, 20, 0.312);
-    padding: 15px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
 }
 
 .Laeveimg {
@@ -265,13 +240,7 @@ button:hover {
 }
 
 
-/* Media Queries for responsiveness */
 @media screen and (max-width: 1024px) {
-    .card2 {
-        /* If this was meant to style .card, update its selector */
-        width: 300px;
-        padding: 10px;
-    }
 
     .leaveCard {
         display: grid;
@@ -296,12 +265,6 @@ button:hover {
 }
 
 @media screen and (max-width: 768px) {
-    .card2 {
-        /* If this was meant to style .card, update its selector */
-        width: 100%;
-        max-width: 400px;
-        margin: 0 auto;
-    }
 
     .leaveCard {
         width: auto;
@@ -334,13 +297,6 @@ button:hover {
 }
 
 @media screen and (max-width: 480px) {
-    .card2 {
-        /* If this was meant to style .card, update its selector */
-        width: 100%;
-        max-width: none;
-        border-radius: 0;
-        box-shadow: none;
-    }
 
     .leaveCard {
         font-size: 0.8rem;

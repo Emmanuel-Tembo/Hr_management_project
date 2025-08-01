@@ -4,8 +4,8 @@
             <div class="signIn-header">
                 <h3>ModernTech Solutions</h3> <br> <hr> <br>
                 <div class="toggle-buttons">
-                    <button @click="isSignIn = true" :class="{ 'active-toggle': isSignIn}">Sign In</button>
-                    <button @click="isSignIn = false" :class="{ 'active-toggle': !isSignIn}">Register</button>
+                    <button class="h-50 w-25" @click="isSignIn = true" :class="{ 'active-toggle': isSignIn}">Sign In</button>
+                    <button class="h-50 w-25" @click="isSignIn = false" :class="{ 'active-toggle': !isSignIn}">Register</button>
                 </div>
             </div>
 
@@ -22,7 +22,7 @@
                         </div>
 
                         <div class="cont-button">
-                            <button type="submit" class="signIn-button">Sign In</button>
+                            <button type="submit" class="signIn-button h-25 w-25">Sign In</button>
                         </div>
                     </div>
                     <br>
@@ -47,7 +47,7 @@
                         </div>
 
                         <div class="cont-button">
-                            <button type="submit" class="signIn-button">Register</button>
+                            <button type="submit" class="signIn-button h-25 w-25">Register</button>
                         </div>
                         <br>
                         <p class="error-msg" :class="{visible: registerError}" ref="registerErrorMessage">{{ registerErrorMessage }}</p>

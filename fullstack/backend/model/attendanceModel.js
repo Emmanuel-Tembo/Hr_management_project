@@ -1,4 +1,3 @@
-// Used for my database functions (queries) if it interacts with the database it goes here
 const { pool } = require("../config/db.js");
 
 const getAttendance = async() => {
@@ -19,13 +18,11 @@ const getAttendance = async() => {
         WHERE
             A.attendance_date = '2025-07-29';
         `)
-        // console.log("Raw data from database:", row);
        return row
     } catch (error) {
         return 'Tough luck'
     }
 }
-// console.log(await getAttendance());
 
 const getAttendanceByDate = async (date = null) => {
     try {
@@ -46,19 +43,16 @@ const getAttendanceByDate = async (date = null) => {
         const params = [];
 
         if (date !== null) {
-            // Add WHERE clause if a date is provided
             sql += `
-                WHERE A.attendance_date = ?`; // Placeholder for security
-            params.push(date); // Add the date to the parameters array
+                WHERE A.attendance_date = ?`; 
+            params.push(date); 
         }
 
-        // Execute the query using the pool, passing SQL and parameters
-        const [rows, fields] = await pool.query(sql, params); // pool.query returns [rows, fields]
+        const [rows, fields] = await pool.query(sql, params); 
 
-        return rows; // Return the fetched rows
+        return rows; 
     } catch (error) {
         console.error("Error in getAttendanceByDate model function:", error);
-        // Re-throw the error so the controller can catch and handle it
         throw error;
     }
 };

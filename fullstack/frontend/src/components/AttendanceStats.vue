@@ -41,12 +41,12 @@ export default {
     name: 'AttendanceStats',
     data() {
         return {
-            targetDate: '2025-07-29', // Hardcoded for the 29th as requested
+            targetDate: '2025-07-29',
             presentCount: 0,
             lateCount: 0,
             absentCount: 0,
-            displayedProgressWidth: 0, // New data property for animated width
-            animationFrameId: null // To store animation frame ID for cleanup
+            displayedProgressWidth: 0, 
+            animationFrameId: null 
         }
     },
     computed: {
@@ -68,35 +68,31 @@ export default {
             }
             return 'N/A';
         },
-        // Calculate progressWidth dynamically based on fetched data, ignoring 'Late'
+        // Calculate progressWidth based on fetched data
         progressWidth() {
-            // Only consider present and absent for the total for percentage calculation
             const totalConsidered = this.presentCount + this.absentCount;
             if (totalConsidered === 0) return 0;
             return (this.presentCount / totalConsidered) * 100;
         }
     },
     watch: {
-        // Watch for changes in attendanceData from the store
         attendanceData: {
             handler(newVal) {
                 console.log("AttendanceStats: Data received by watcher:", newVal);
                 if (newVal && newVal.length > 0) {
                     this.calculateDailyStats();
-                    // After calculating stats, animate the progress bar
                     this.animateProgressBar();
                 } else {
                     this.presentCount = 0;
                     this.lateCount = 0;
                     this.absentCount = 0;
-                    this.displayedProgressWidth = 0; // Reset animated width
+                    this.displayedProgressWidth = 0;
                     console.log("AttendanceStats: No data or empty array received. Counts reset.");
                 }
             },
             deep: true,
             immediate: true
         },
-        // Watch for changes in the target progressWidth to re-animate if needed
         progressWidth(newVal, oldVal) {
             if (newVal !== oldVal) {
                 this.animateProgressBar();
@@ -108,7 +104,6 @@ export default {
         this.getAttendanceByDate(this.targetDate);
     },
     beforeUnmount() {
-        // Clear any ongoing animation frames to prevent memory leaks
         if (this.animationFrameId) {
             cancelAnimationFrame(this.animationFrameId);
         }
@@ -177,7 +172,6 @@ export default {
 </script>
 
 <style>
-/* --- Keyframes for a pure fade-in animation --- */
 @keyframes fadeInOnly {
     0% {
         opacity: 0;

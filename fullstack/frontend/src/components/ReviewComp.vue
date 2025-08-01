@@ -12,7 +12,7 @@
         </div>
         <!-- ADD BUTTON -->
         <div>
-            <button class="add-btn" style="margin-right: 20px;" @click="showAddModal = true">Add Review</button>
+            <button class="add-btn h-50" style="margin-right: 20px;" @click="showAddModal = true">Add Review</button>
         </div>
     </div>
     
@@ -335,6 +335,7 @@ td {
 }
 .r-txt{
     margin-top: 5px;
+    margin-left: 50px;
 }
 .i-rev{
     display: flex;
