@@ -67,6 +67,6 @@ const updateLeave = async (req, res) => {
 
 module.exports = {
     getEmployeeLeave,
-    getPendingLeaves, // Export the new controller function
-    updateLeave       // Export the new controller function
+    getPendingLeaves, 
+    updateLeave       
 };

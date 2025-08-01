@@ -47,7 +47,7 @@
 
     <!-- ADD PAYROLL -->
     <div>
-        <button class="add-btn" @click="showModal = true">Add Payroll</button>
+        <button class="add-btn h-50" @click="showModal = true">Add Payroll</button>
     </div>
 
     <div class="add-model" v-if="showModal">

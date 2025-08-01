@@ -30,7 +30,7 @@ export default {
     name: 'Dashboard'
 }
 </script>
-<style>
+<style scoped>
 .fa {
     color: white;
 }

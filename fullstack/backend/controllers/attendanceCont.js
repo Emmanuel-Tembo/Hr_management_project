@@ -1,4 +1,3 @@
-// meant to run and execute all the functions from your model
 const { getAttendance, getAttendanceByDate } = require('../model/attendanceModel.js');
 
 const EmployeeGet = async (req,res) => {
@@ -8,10 +7,9 @@ const EmployeeGet = async (req,res) => {
 };
 
 const getAttendanceRecords = async (req, res) => {
-    const date = req.query.date || null; // Get date from query parameter
+    const date = req.query.date || null;
 
     try {
-        // Use the flexible getAttendanceByDate model function
         const attendanceData = await getAttendanceByDate(date); 
 
         res.status(200).json({

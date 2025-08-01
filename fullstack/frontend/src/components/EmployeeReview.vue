@@ -1,83 +1,106 @@
 <template>
-    <div class="ReviewCard">
-        <h3 class="rev-title">Reviews</h3>
+    <div class="ReviewCard shadow-sm"> <h3 class="text-center my-3">Reviews</h3>
         <div class="reviews">
-            <div class="review-items" v-for="(employee,idx) in employee_info.slice(0,5)" :key="employee.employeeId">
+            <div class="w-100 d-flex justify-content-around mb-3" v-for="(review,idx) in displayedReviews" :key="review.review_id">
                 <div class="pfp">
-                    <img class="rev-img" :src="imgAndRating[idx].img" alt="hah">
+                    <img class="rev-img" :src="imgAndRating[idx] ? imgAndRating[idx].img : 'https://via.placeholder.com/50'" alt="Employee Profile">
                 </div>
-                <div class="top">
-                    <h5 class="rev-name">{{ employee.name }}</h5>
-                    <p class="review">{{ employee.position }}</p>
+                <div class="top ms-4">
+                    <h5 class="rev-name">{{ review.name }}</h5>
+                    <p class="review">{{ review.department_name }}</p>
                 </div>
                 <div class="bottom">
                     <div class="rev-icon">
                         <i class="fa fa-star" aria-hidden="true"></i>
-                        <p class="icon-txt">{{ imgAndRating[idx].rating }}</p>
+                        <p class="icon-txt">{{ review.rating }}</p>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
         <div class="rv-btn-div">
-            <router-link to="/reviews"><button class="rev-btn">see more</button></router-link>
+            <router-link to="/reviews"><button class="btn-primary rev-btn">see more</button></router-link>
         </div>
     </div>
 </template>
 
 <script>
-import employee_info from '@/data/employee_info';
+import { mapState, mapActions } from 'vuex';
+
 export default {
     name: 'EmployeeReview',
     data(){
         return{
-            employee_info:employee_info,
             imgAndRating:[
                 {
-                img: "https://img.freepik.com/free-photo/portrait-african-american-man_23-2149072179.jpg?semt=ais_hybrid&w=740",
-                rating: 8.3
+                img: "https://img.drz.lazcdn.com/static/pk/p/ad5ac8a13dc747a012e1b07e9e520645.jpg_720x720q80.jpg",
                 },
                 {
-                img: "https://media.istockphoto.com/id/1174056245/photo/some-moments-require-some-seriousness.jpg?s=612x612&w=0&k=20&c=dPqQQq6wiygApzSF9r72B9p6Bp4pygxm3M7aqC1oae8=",
-                rating: 7.7
+                img: "https://thepatientstory.com/wp-content/uploads/2025/01/Oya-G.-square-headshot-1024x1024.jpg",
                 },
                 {
-                img: "https://img.freepik.com/premium-photo/minimal-close-up-portrait-serious-black-man-looking-camera-while-standing-by-white-wall-copy-s_236854-34801.jpg",
-                rating: 8.6
+                img: "https://img.freepik.com/premium-vector/portrait-handsome-middle-aged-male-blue-sweater-smiling-cameraportrait-han_912214-54892.jpg?semt=ais_hybrid&w=740",
                 },
                 {
-                img: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?cs=srgb&dl=pexels-pixabay-415829.jpg&fm=jpg",
-                rating: 9.2
+                img: "https://i5.walmartimages.com/asr/c944f9da-bab8-456f-b824-16b643680b85.fa348ac80dae673c9a26579e0acbbb6a.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF",
                 },
                 {
-                img: "https://img.freepik.com/free-photo/beautiful-african-woman-face-portrait-close-up_53876-148041.jpg?semt=ais_items_boosted&w=740",
-                rating: 7.9
+                img: "https://media.istockphoto.com/id/1389348844/photo/studio-shot-of-a-beautiful-young-woman-smiling-while-standing-against-a-grey-background.jpg?s=612x612&w=0&k=20&c=anRTfD_CkOxRdyFtvsiPopOluzKbhBNEQdh4okZImQc=",
+                },
+                {
+                img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCwnCbh6E7elXmxojUwd0U2k52ulKGAjhlhA&s",
+                },
+                {
+                img: "https://media.istockphoto.com/id/1194465573/photo/portrait-of-smiling-african-american-woman.jpg?s=612x612&w=0&k=20&c=hD6As6gEFZobg44dhiHWkweVcKCv0NvPkk6XQChQKds=",
                 },
             ]
         }
+    },
+    computed: {
+        ...mapState(['reviews']),
+        displayedReviews() {
+            const reviewsFromStore = this.reviews ? this.reviews.slice(0, 6) : [];
+            return reviewsFromStore.map((review, index) => {
+                const imageUrl = this.imgAndRating[index] ? this.imgAndRating[index].img : 'https://via.placeholder.com/50';
+                return {
+                    ...review,
+                    img: imageUrl
+                };
+            });
+        }
+    },
+    created() {
+        this.getAllReviewsWithAllDetails();
+    },
+    methods: {
+        ...mapActions(['getAllReviewsWithAllDetails'])
     }
 }
 </script>
 
-<style scoped>
-.rev-title{
-    padding: 20px;
-    font-size: 30px;
-    color: rgba(126, 123, 123, 0.904);
+<style>
+@keyframes slideInFromRightSpeed {
+    0% {
+        transform: translateX(100%); 
+        opacity: 0; 
+    }
+    100% {
+        transform: translateX(0); 
+        opacity: 1; 
+    }
 }
+
 .ReviewCard {
     background-color: white;
     margin-left: 10px;
     width: 400px;
-    height: 100%;
+    height: 97%;
     border-radius: 10px;
     box-shadow: 0 4px 16px 0 rgba(8, 14, 20, 0.312);
+    border: 1px solid rgba(128, 128, 128, 0.384);
+    animation: slideInFromRightSpeed 1s ease-out forwards; 
 }
-.review-items{
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-}
+
 .pfp{
     width: 15%;
     align-content: center;
@@ -98,8 +121,9 @@ export default {
     margin-top: 5px;
 }
 .rev-img{
-    width: 50px;
-    border-radius: 6px;
+    width: 65px;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px 0 rgba(8, 14, 20, 0.312);
 }
 .rev-icon{
     background-color: rgba(245, 171, 33, 0.226);
@@ -120,7 +144,7 @@ export default {
 .reviews{
     margin: 0;
     font-weight: 300;
-    height: 75%;
+    height: 77%;
 }
 .review{
     color: #333;
@@ -129,10 +153,6 @@ export default {
 .rev-btn{
     width: 100%;
     height: 30px;
-    background-color: white;
-    border: 1px solid skyblue;
-    border-radius: 5px;
-    color: rgb(78, 177, 216);
 }
 .rv-btn-div{
     width: 90%;

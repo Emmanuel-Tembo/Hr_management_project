@@ -101,12 +101,12 @@ export default {
                 return { backgroundColor: 'green', color: 'white' };
             } else if (state === 'Absent') {
                 return { backgroundColor: 'red', color: 'white' };
-            } else if (state === 'Late') { // Added 'Late' status styling
+            } else if (state === 'Late') { 
                 return { backgroundColor: 'orange', color: 'white' };
-            } else if (state === 'Leave') { // Added 'Leave' status styling
+            } else if (state === 'Leave') { 
                 return { backgroundColor: 'blue', color: 'white' };
             }
-            return {}; // Default styling if status doesn't match
+            return {}; 
         }
     }
 }

@@ -4,36 +4,31 @@
             <div class="signIn-header">
                 <h3>ModernTech Solutions</h3> <br> <hr> <br>
                 <div class="toggle-buttons">
-                    <button @click="isSignIn = true" :class="{ 'active-toggle': isSignIn}">Sign In</button>
-                    <button @click="isSignIn = false" :class="{ 'active-toggle': !isSignIn}">Register</button>
+                    <button class="h-50 w-25" @click="isSignIn = true" :class="{ 'active-toggle': isSignIn}">Sign In</button>
+                    <button class="h-50 w-25" @click="isSignIn = false" :class="{ 'active-toggle': !isSignIn}">Register</button>
                 </div>
             </div>
-            
+
             <div class="form-container">
-                <!-- SIGN IN FORM -->
                 <form @submit.prevent="signInForm" v-if="isSignIn">
                     <span>Sign In</span> <br><br>
                     <div class="singIn-form">
                         <div class="inputs">
-                            <!-- USERNAME -->
                             <input type="text" class="username" v-model="enteredUser" :class="{'errorInput': signInError}" placeholder="Username" required>
                             <br> <br>
 
-                            <!-- PASSWORD -->
                             <input type="password" class="password" v-model="enteredPwd" :class="{'errorInput': signInError}" placeholder="Password" required>
                             <br> <br>
                         </div>
 
-                        <!-- SUBMIT BUTTON -->
                         <div class="cont-button">
-                            <button type="submit" class="signIn-button">Sign In</button>
+                            <button type="submit" class="signIn-button h-25 w-25">Sign In</button>
                         </div>
                     </div>
                     <br>
                     <p class="error-msg" :class="{visible: signInError}">Invalid credentials. Please try again.</p>
                 </form>
 
-                <!-- Register -->
                 <form @submit.prevent="registerForm" v-else>
                     <span>Register</span> <br><br>
                     <div class="signIn-form">
@@ -52,11 +47,11 @@
                         </div>
 
                         <div class="cont-button">
-                            <button type="submit" class="signIn-button">Register</button>
+                            <button type="submit" class="signIn-button h-25 w-25">Register</button>
                         </div>
                         <br>
-                        <p class="error-msg" :class="{visible: registerError}">{{ registerErrorMessage }}</p>
-                        <p class="success-msg" :class="{visible: registerSuccess}">Registration successful! Please sign in.</p>
+                        <p class="error-msg" :class="{visible: registerError}" ref="registerErrorMessage">{{ registerErrorMessage }}</p>
+                        <p class="success-msg" :class="{visible: registerSuccess}" ref="registerSuccessMessage">Registration successful! Please sign in.</p>
                     </div>
                 </form>
             </div>
@@ -79,7 +74,8 @@
                 regPwd:'',
                 regConfirmPwd:'',
                 registerError: false,
-                registerSuccess: false
+                registerSuccess: false,
+                registerErrorMessage: 'Registration failed.' // Initialize with a default message
             }
         },
         methods: {
@@ -87,13 +83,11 @@
                 this.signInError = false;
                 this.registerSuccess = false;
 
-
                 try {
                     const res = await axios.post('http://localhost:3030/api/auth/login', {
                         username: this.enteredUser,
                         password: this.enteredPwd
                     });
-
 
                     if (res.data && res.data.token) {
                         localStorage.setItem('userToken', res.data.token);
@@ -108,26 +102,78 @@
                 }
             },
 
+            validatePassword(password, username) {
+                // 1. Minimum 8 characters
+                if (password.length < 8) {
+                    return "Password must be at least 8 characters long.";
+                }
+
+                // 2. Contains at least one lowercase letter
+                if (!/[a-z]/.test(password)) {
+                    return "Password must contain at least one lowercase letter.";
+                }
+
+                // 3. Contains at least one uppercase letter
+                if (!/[A-Z]/.test(password)) {
+                    return "Password must contain at least one uppercase letter.";
+                }
+
+                // 4. Contains at least one number
+                if (!/[0-9]/.test(password)) {
+                    return "Password must contain at least one number.";
+                }
+
+                // 5. Contains at least one special character
+                if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~` ]/.test(password)) {
+                    return "Password must contain at least one special character (e.g., !@#$%^&*).";
+                }
+
+                // 6. Password cannot include username
+                if (username && password.toLowerCase().includes(username.toLowerCase())) {
+                    return "Password cannot include your username.";
+                }
+
+                return null; // Indicates no error
+            },
 
             async registerForm() {
                 this.registerError = false;
                 this.registerSuccess = false;
-                this.registerErrorMessage = 'Registration failed';
+                this.registerErrorMessage = 'Registration failed.'; // Reset message
 
                 if (
-                    this.regUser.trim() === "" || 
-                    this.regID.trim() === "" || 
-                    this.regPwd.trim() === "" || 
+                    this.regUser.trim() === "" ||
+                    this.regID.trim() === "" ||
+                    this.regPwd.trim() === "" ||
                     this.regConfirmPwd.trim() === ""
                 ) {
                     this.registerError = true;
-                    this.registerErrorMessage = 'All fields are required'
+                    this.registerErrorMessage = 'All fields are required';
+                    // Scroll to error message immediately
+                    this.$nextTick(() => {
+                        this.$refs.registerErrorMessage?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    });
                     return;
                 }
 
                 if (this.regPwd !== this.regConfirmPwd) {
                     this.registerError = true;
                     this.registerErrorMessage = 'Passwords do not match';
+                    // Scroll to error message immediately
+                    this.$nextTick(() => {
+                        this.$refs.registerErrorMessage?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    });
+                    return;
+                }
+
+                const passwordValidationError = this.validatePassword(this.regPwd, this.regUser);
+                if (passwordValidationError) {
+                    this.registerError = true;
+                    this.registerErrorMessage = passwordValidationError;
+                    // Scroll to error message immediately
+                    this.$nextTick(() => {
+                        this.$refs.registerErrorMessage?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    });
                     return;
                 }
 
@@ -140,19 +186,29 @@
 
                     if (res.status === 201) {
                         this.registerSuccess = true;
+                        // Scroll to success message immediately
+                        this.$nextTick(() => {
+                            this.$refs.registerSuccessMessage?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                        });
+
                         this.regUser = "";
                         this.regID = "";
                         this.regPwd = "";
                         this.regConfirmPwd = "";
 
                         setTimeout(() => {
-                        this.isSignIn = true;
-                        this.registerSuccess = false
-                    }, 1500);
+                            this.isSignIn = true;
+                            this.registerSuccess = false;
+                            this.registerErrorMessage = 'Registration failed.';
+                        }, 1500);
                     }
                 } catch (e) {
-                this.registerError = true;
-                this.registerErrorMessage = e.response ? e.response.data.message : 'An unexpected error occurred during registration.';
+                    this.registerError = true;
+                    this.registerErrorMessage = e.response ? e.response.data.message : 'An unexpected error occurred during registration.';
+                    // Scroll to error message on backend failure
+                    this.$nextTick(() => {
+                        this.$refs.registerErrorMessage?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    });
                 }
             }
         },
@@ -174,6 +230,7 @@
 </script>
 
 <style scoped>
+    /* Your existing CSS styles remain unchanged */
     .signInScreen {
         height: 100vh;
         width: 100vw;
@@ -287,7 +344,7 @@
     }
 
     .signIn-button:hover {
-        border-radius: 15px;    
+        border-radius: 15px;      
         background-color: white;
         color: #2d4257;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.08), 0 6px 20px 0 rgba(0, 0, 0, 0.08);

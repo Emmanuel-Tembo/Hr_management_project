@@ -8,9 +8,8 @@
                     <th class="Hrow" scope="col">
                         <div class="btn-group">
                             <span class="date">Date</span>
-                            <button type="button" class="btn"></button>
                             <button type="button"
-                                class="btn btn-danger dropdown-toggle dropdown-toggle-split"
+                                class="btn btn-danger dropdown-toggle dropdown-toggle-split ms-1"
                                 data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="visually-hidden">Toggle Dropdown</span>
                             </button>
@@ -29,11 +28,11 @@
             </thead>
             <tbody>
                 <tr v-for="record in displayedAttendance" :key="record.EmployeeID + record.attendance_date">
-                    <td>{{ record.EmployeeID }}</td>
-                    <td>{{ record.EmployeeName }}</td>
-                    <td>{{ record.attendance_date }}</td>
-                    <td :style="changeBackground(record.attendance_status)"> {{ record.attendance_status }} </td>
-                    <td>{{ record.clocked_in_time }}</td>
+                    <td class="fw-medium">{{ record.EmployeeID }}</td>
+                    <td class="fw-medium">{{ record.EmployeeName }}</td>
+                    <td class="fw-medium">{{ record.attendance_date }}</td>
+                    <td class="fw-medium" :style="changeBackground(record.attendance_status)"> {{ record.attendance_status }} </td>
+                    <td class="fw-medium">{{ record.clocked_in_time }}</td>
                     <td :style="changeBackground(record.attendance_state)">
                         <div class="td-back">
                             {{ record.attendance_state }}
@@ -49,7 +48,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'; // Import mapActions
+import { mapState, mapActions } from 'vuex'; 
 
 export default {
     data() {
@@ -58,7 +57,6 @@ export default {
         };
     },
     computed: {
-        // Map both 'Attendance' (general) and 'AttendanceByDate' (filtered) states from Vuex
         ...mapState({
             generalAttendance: state => state.Attendance,
             attendanceByDateRecords: state => state.AttendanceByDate
@@ -74,73 +72,58 @@ export default {
         }
     },
     mounted() {
-        // Dispatch the action to fetch general attendance data when component mounts
-        // This populates the table initially when no date is selected.
         this.getAttendanceByDate(null);
     },
-    // Watchers: React to data changes
     watch: {
-        // Watch for changes in the 'selectDate' input
         selectDate(newDate) {
-            this.handleDateChange(); // Call the method to dispatch the action
+            this.handleDateChange();
         }
     },
-    // Component methods for logic and formatting
     methods: {
-        // Map Vuex actions to component methods
         ...mapActions([
-            'getAttendance',       // To fetch general attendance (e.g., hardcoded date)
-            'getAttendanceByDate'  // To fetch attendance by a specific date
+            'getAttendance',       
+            'getAttendanceByDate' 
         ]),
         
-        // Method to handle the date input change and dispatch the appropriate action
         handleDateChange() {
             if (this.selectDate) {
                 // If a date is selected, dispatch the action to fetch by date
                 console.log("Dispatching getAttendanceByDate for:", this.selectDate);
                 this.getAttendanceByDate(this.selectDate);
             } else {
-                // If the date input is cleared, you might want to:
-                // 1. Re-fetch all general attendance (from /attendance)
-                // this.getAttendance(); 
-                // OR
-                // 2. Fetch all using the /attendancedate endpoint with no date param
+                
                 console.log("Date input cleared. Dispatching getAttendanceByDate for all records.");
                 this.getAttendanceByDate(null); // Pass null to get all via the dynamic endpoint
             }
         },
 
-        // Method to dynamically apply background and text color based on status
         changeBackground(status) {
-            // Corrected to check the correct property names from your SQL query output
-            if (status === 'Present' || status === 'In') { // 'In' for attendance_state
+            if (status === 'Present' || status === 'In') { 
                 return { backgroundColor: 'green', color: 'white' };
-            } else if (status === 'Absent' || status === 'Out') { // 'Out' for attendance_state
+            } else if (status === 'Absent' || status === 'Out') {
                 return { backgroundColor: 'red', color: 'white' };
             } else if (status === 'Late') {
                 return { backgroundColor: 'orange', color: 'white' };
             } else if (status === 'Leave') {
                 return { backgroundColor: 'blue', color: 'white' };
-            } else if (status === 'Not Clocked in' || status === 'Undefined' || status === null) { // Handle null/undefined state
+            } else if (status === 'Not Clocked in' || status === 'Undefined' || status === null) { 
                 return { backgroundColor: 'grey', color: 'white' };
             }
-            return {}; // Default if status doesn't match
+            return {};
         }
     }
 };
 </script>
 
 <style>
-/* Your existing styles (no changes needed here) */
 .empTable {
     text-align: center;
     color: #2c3e50;
     font-weight: 300;
     background-color: white;
     border-radius: 5px;
-    width: 80%;
+    /* width: 90%; */
     height: 90vh;
-    margin-left: 15%;
     margin-top: 20px;
 }
 
@@ -172,7 +155,7 @@ td {
 }
 
 .btn-group .btn-danger {
-    background-color: #007bff !important; /* Using a common blue for 'danger' class with custom style */
+    background-color: #007bff !important; 
     border-color: #007bff !important;
     color: #fff !important;
     margin-top: 4px;
@@ -182,12 +165,11 @@ td {
     border-radius: 5px;
 }
 
-/* Optional: Style for the date input within the dropdown */
 .dropdown-menu .dropdown-item input[type="date"] {
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 100%; /* Make it fill the dropdown item width */
-    box-sizing: border-box; /* Include padding/border in width */
+    width: 100%; 
+    box-sizing: border-box;
 }
 </style>

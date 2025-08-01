@@ -23,7 +23,7 @@ const getLeaveRecords = async (emp_id = null) => {
             params.push(emp_id);
         }
 
-        sql += ` ORDER BY LT.leave_start DESC;`; // Order by most recent leave first
+        sql += ` ORDER BY LT.leave_start DESC;`; 
 
         const [rows] = await pool.query(sql, params);
         return rows;
