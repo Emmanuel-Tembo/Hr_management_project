@@ -12,7 +12,7 @@
         </div>
         <!-- ADD BUTTON -->
         <div>
-            <button class="add-btn h-50" style="margin-right: 20px;" @click="showAddModal = true">Add Review</button>
+            <button class="add-btn h-50" style="margin-right: 20px; height: 70px;" @click="showAddModal = true">Add Review</button>
         </div>
     </div>
     
