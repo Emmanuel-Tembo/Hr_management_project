@@ -59,5 +59,6 @@ npm run serve
 
 ## Notes
 - Ensure MySQL is running and properly configured before starting the backend
-- Initial registration can only be for "EMP-700" to "EMP-709"
+- Initial user registration is limited to employees already on the system: EMP-700 to EMP-709
 - Attendance should be manually types in and dates to note are in July 2025 between 23rd and 29th
+- Department ID is 101-109.
