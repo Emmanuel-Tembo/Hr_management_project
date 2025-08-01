@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const attendanceRoutes = require('./routes/attendanceRoute.js');
 const leaveRoutes = require('./routes/leaveRoute.js');
+const employeeRoutes = require('./routes/EmpRoute.js')
 const cors = require('cors');
 dotenv.config(); // gives us access to config files NAMING IS IMPORTANT
 
@@ -29,6 +30,7 @@ app.use('/api/bankinfo', bankInfoRoutes);
 app.use('/api/taxinfo', taxRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/Employees',employeeRoutes);
 
 app.listen(PORT, () => console.log(`Running on http://localhost:${PORT}`));
 

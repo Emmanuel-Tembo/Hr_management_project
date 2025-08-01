@@ -10,7 +10,9 @@ export default createStore({
     ApprovedLeaveStats: null,
     DeniedLeaveStats: null,
     salaries: null,
-    reviews: null
+    reviews: null,
+    employees: [],
+    users: []
   },
   getters: {
     allLeaveCount: (state) => state.LeaveRecords ? state.LeaveRecords.length : 0,
@@ -114,7 +116,25 @@ export default createStore({
     },
     setReviews(state, payload){
       state.reviews = payload
-    }
+    },
+    setEmployees(state, employees) {
+      state.employees = employees
+    },
+    setUsers(state, users) {
+      state.users = users
+    },
+    deleteEmployee(state, emp_id) {
+      state.users = state.users.filter(user => user.emp_id !== emp_id)
+    },
+     ADD_EMPLOYEE(state, employee) {
+    state.users.push(employee);
+  },
+ UPDATE_EMPLOYEE(state, { emp_id, employee }) {
+  const index = state.users.findIndex(u => u.emp_id === emp_id);
+  if (index !== -1) {
+    state.users.splice(index, 1, employee);
+  }
+}
   },
   actions: {
     // allow asyncrones process so its used to fetch data
@@ -267,7 +287,60 @@ export default createStore({
         console.error("Error fetching single review:");
         throw error; 
       }
+    },
+    async getEmp({ commit }) {
+  try {
+    let { data } = await axios.get('http://localhost:3030/Employees')
+    commit('setUsers', data) // Now using data directly
+  } catch (error) {
+    console.error("Error fetching employees:", error)
+    return error
+  }
+},
+  async addEmp({ commit }, employeeData) {
+    try {
+      const response = await axios.post('http://localhost:3030/Employees', {
+        emp_id: employeeData.emp_id,
+        name: employeeData.name,
+        department_id: employeeData.department_id || null,
+        position: employeeData.position,
+        reviewer_emp_id: employeeData.reviewer_emp_id || "EMP-701"
+      });
+      commit('ADD_EMPLOYEE', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Add error:', error);
+      throw error;
     }
+  },
+    async deleteEmp({ commit }, emp_id) {
+      try {
+        await axios.delete(`http://localhost:3030/Employees/${emp_id}`)
+        commit('deleteEmployee', emp_id)
+        return { success: true }
+      } catch (error) {
+        console.error('Delete error:', error)
+        throw error
+      }
+    },
+ async updateEmp({ commit }, { emp_id, name, department_id, position, reviewer_emp_id }) {
+  try {
+    const response = await axios.put(`http://localhost:3030/Employees/${emp_id}`, {
+      name,
+      department_id,
+      position,
+      reviewer_emp_id
+    });
+    commit('UPDATE_EMPLOYEE', {
+      emp_id,
+      employee: response.data.employee
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Update error:', error);
+    throw error;
+  }
+}
   },
   modules: {
   }
