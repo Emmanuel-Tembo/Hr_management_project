@@ -13,45 +13,33 @@
 <script>
 export default {
     name: 'WelcomeComp'
-    // No JavaScript needed in mounted() for this pure CSS keyframes animation
 }
 </script>
 
 <style>
-/* Global styles or styles defined in other components that apply here */
 .wlcm-title {
     color: #333;
 }
 
-/* --- Keyframes Animation Definition --- */
 @keyframes slideInFromLeft {
     0% {
-        transform: translateX(-100%); /* Starts 100% of its own width off-screen to the LEFT */
-        opacity: 0; /* Starts invisible */
+        transform: translateX(-100%); 
+        opacity: 0; 
     }
     100% {
-        transform: translateX(0); /* Ends at its normal position */
-        opacity: 1; /* Ends fully visible */
+        transform: translateX(0);
+        opacity: 1; 
     }
 }
 
-/* --- Styles for the dash-img container --- */
 .dash-img {
     display: flex;
     align-items: center;
     width: 100%;
 
-    /* Apply the animation here */
     animation: slideInFromLeft 0.8s ease-out forwards;
-    /*
-      - slideInFromLeft: The name of our keyframes animation
-      - 0.8s: Duration of the animation
-      - ease-out: Timing function (starts fast, ends slow)
-      - forwards: Essential! Keeps the element in its final state (100%) after the animation completes.
-    */
 }
 
-/* Other styles you already have */
 .dash-profile {
     width: 200px;
     border-radius: 10px;
@@ -60,8 +48,7 @@ export default {
 }
 
 .txt {
-    /* text-align: center; */ /* Bootstrap's text-center handles this */
-    width: 100%; /* Bootstrap's w-100 handles this */
+    width: 100%; 
 }
 
 .dash-txt {
@@ -74,10 +61,5 @@ export default {
     .wlcm-title {
         font-size: 35px;
     }
-    /*
-    .txt {
-        text-align: center; // This is redundant if you use Bootstrap's text-center or it's default
-    }
-    */
 }
 </style>

@@ -6,15 +6,8 @@
 <script>
 import LeaveViewComp from "@/components/LeaveViewComp.vue";
 import SideBar from "@/components/SideBar.vue";
-import attendanceAndLeave from "@/data/attendanceAndLeave";
 
 export default {
-  data() {
-    return {
-      attendanceAndLeave: attendanceAndLeave,
-    };
-  },
-
   components: {
     SideBar,
     LeaveViewComp,
