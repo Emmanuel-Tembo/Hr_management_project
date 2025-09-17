@@ -20,7 +20,7 @@ A comprehensive HR management system built using Node.js, Vue.js, and MySQL, des
 1. Git clone the url
 
 ```bash
-git clone https://github.com/Emanorion/Hr_management_project.git
+git clone https://github.com/Emmanuel-Tembo/Hr_management_project.git
 ```
 2. Open the fullstack folder and open on Visual Studio Code
 
