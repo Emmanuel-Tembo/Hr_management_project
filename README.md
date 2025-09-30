@@ -26,6 +26,12 @@ git clone https://github.com/Emmanuel-Tembo/Hr_management_project.git
 
 3. Install the project 
 ```bash
+cd backend
+npm install
+npm install -g nodemon
+```
+```bash
+cd frontend
 npm install
 ```
 
@@ -41,13 +47,13 @@ JWT_SECRET= [insert your jwt secret here]
 
 5. Open MySQL database file in workbench and run it
 
-6. With a split terminal, cd into the backend and frontend folder and run it
+6. With a split terminal, run backend and frontend
 ```bash
-cd backend
+//backend
 nodemon index.js
 ```
 ```bash
-cd frontend
+//frontend
 npm run serve
 ```
 
